@@ -2,13 +2,11 @@ package projectTree;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 import dao.beans.DirTreeBean;
 import mainPage.events.DirTreeEvent;
