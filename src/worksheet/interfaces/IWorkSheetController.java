@@ -1,0 +1,30 @@
+package worksheet.interfaces;
+
+import java.awt.Point;
+
+import javax.swing.JPanel;
+
+import mainPage.events.WorkSheetEvent;
+import mainPage.interfaces.WorkSheetObserver;
+
+public interface IWorkSheetController {
+	
+	void loadWorkSheet(String relaPathname);
+	
+	void save(Point location);
+	
+	void createDotPlot(Point location);
+	
+	void createHistogram(Point location);
+	
+	void createDensityPlot(Point location);
+	
+	JPanel getView();
+	
+	void addObserver(WorkSheetObserver observer);
+	
+	void removeObserver(WorkSheetObserver observer);
+	
+	void notifyObservers(WorkSheetEvent event);
+
+}
