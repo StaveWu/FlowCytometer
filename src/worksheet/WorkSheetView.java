@@ -3,6 +3,7 @@ package worksheet;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -75,10 +76,11 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver {
 	 */
 	private class PopupMenuListener extends MouseAdapter {
 		@Override
-		public void mousePressed(MouseEvent e) {
+		public void mouseClicked(MouseEvent e) {
 			if(e.getButton() == MouseEvent.BUTTON3 && showPopupMenu) {
-				new ContainerPopupMenu(controller, e.getPoint()).show(
-						WorkSheetView.this, e.getX(), e.getY());
+				Point p = e.getPoint();
+				new ContainerPopupMenu(controller, p).show(
+						WorkSheetView.this, p.x, p.y);
 			}
 		}
 	}

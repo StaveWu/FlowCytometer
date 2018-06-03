@@ -24,6 +24,7 @@ import javax.swing.JPanel;
  * @author wteng
  *
  */
+@SuppressWarnings("serial")
 public class PaneX extends JPanel {
 	
 	protected static final int FOCUSBORDER_THICKNESS = 6;
@@ -43,7 +44,6 @@ public class PaneX extends JPanel {
 		emptyCanvas = new EmptyCanvas();
 		//设置pane为透明的
 		setOpaque(false);
-		setFocusable(true);
 		setResizable(true);
 		
 		addMouseListener(new FocusListener());
@@ -68,6 +68,23 @@ public class PaneX extends JPanel {
 		}
 		emptyCanvas.paint(g);
 	}
+	
+	@Override
+	public void setFocusable(boolean focusable) {
+		if (focusable) {
+			//设置该组件被聚焦，其他兄弟组件取消聚焦
+			JComponent c = (JComponent) this.getParent();
+			for (int i = 0; i < c.getComponentCount(); i++) {
+				if(this != c.getComponent(i)) {
+					c.getComponent(i).setFocusable(false);
+					c.repaint();
+				}
+			}
+		}
+		super.setFocusable(focusable);
+	}
+	
+	
 	/**
 	 * 触发角
 	 * @author wteng
@@ -100,6 +117,7 @@ public class PaneX extends JPanel {
 			return delegate.contains(p);
 		}
 	}
+	
 	/**
 	 * 聚焦框
 	 * @author wteng
@@ -138,6 +156,7 @@ public class PaneX extends JPanel {
 	        
 		}
 	}
+	
 	/**
 	 * 空白画布
 	 * @author wteng
@@ -255,20 +274,8 @@ public class PaneX extends JPanel {
 	private class FocusListener extends MouseAdapter {
 		
 		@Override
-		public void mouseClicked(MouseEvent e) {
-			//设置该组件被聚焦
-			JComponent c = (JComponent) PaneX.this.getParent();
-			//设置其他兄弟组件取消聚焦
-			for (int i = 0; i < c.getComponentCount(); i++) {
-				if(PaneX.this == c.getComponent(i)) {
-					c.getComponent(i).setFocusable(true);
-					c.repaint();
-				}
-				else {
-					c.getComponent(i).setFocusable(false);
-					c.repaint();
-				}
-			}
+		public void mousePressed(MouseEvent e) {
+			PaneX.this.setFocusable(true);
 		}
 
 	}

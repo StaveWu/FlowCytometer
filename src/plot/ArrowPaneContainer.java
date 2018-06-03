@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import utils.SwingUtils;
 
 /**
- * 提供一个箭头描绘的环境，没有上下文菜单
+ * 提供一个箭头描绘的容器
  * @author wteng
  *
  */
@@ -33,8 +33,18 @@ public class ArrowPaneContainer extends JPanel implements ArrowPaneObserver {
 			ArrowPane pane = (ArrowPane) comp;
 			pane.addObserver(this);
 			panes.add(pane);
+			
 		}
-		return super.add(comp);
+		Component res = super.add(comp);
+		focusLastPane();
+		return res;
+	}
+	
+	private void focusLastPane() {
+		if (panes.size() <= 0) {
+			return;
+		}
+		panes.get(panes.size() - 1).setFocusable(true);
 	}
 	
 	@Override
@@ -43,6 +53,7 @@ public class ArrowPaneContainer extends JPanel implements ArrowPaneObserver {
 			panes.remove(comp);
 		}
 		super.remove(comp);
+		focusLastPane();
 	}
 	
 	@Override
