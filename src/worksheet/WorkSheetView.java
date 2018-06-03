@@ -4,10 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -17,6 +20,7 @@ import mainPage.events.WorkSheetEvent;
 import menu.ContainerPopupMenu;
 import plotContainer.PLotContainerObserver;
 import plotContainer.PlotContainer;
+import utils.SwingUtils;
 import worksheet.interfaces.IWorkSheetController;
 import worksheet.interfaces.IWorkSheetModel;
 
@@ -64,10 +68,49 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver {
 		 * °´Å¥
 		 */
 		saveButton = new JButton("±£´æ");
+		saveButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					model.save();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+					SwingUtils.showErrorDialog(WorkSheetView.this, "±£´æÊ§°Ü£¡" + e1.getMessage());
+				}
+			}
+		});
 		toolBar.add(saveButton);
+		
+//		JButton btnload = new JButton("load");
+//		btnload.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				try {
+//					model.init("");
+//					repaint();
+//				} catch (Exception e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//			}
+//		});
+//		toolBar.add(btnload);
 		
 		this.add(toolBar, BorderLayout.NORTH);
 	}
+	
+	/** Returns an ImageIcon, or null if the path was invalid. */
+    protected static ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = WorkSheetView.class.getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
 	
 	/**
 	 * ÓÒ»÷²Ëµ¥¼àÌý
@@ -80,7 +123,7 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver {
 			if(e.getButton() == MouseEvent.BUTTON3 && showPopupMenu) {
 				Point p = e.getPoint();
 				new ContainerPopupMenu(controller, p).show(
-						WorkSheetView.this, p.x, p.y);
+						plotContainer, p.x, p.y);
 			}
 		}
 	}

@@ -70,7 +70,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 	 */
 	public int status = DEFAULT_STATUS;
 	
-	private int uid;
+	private int uid = -1;
 	private int previd = -1;
 	private int nextid = -1;
 
@@ -116,7 +116,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 	/**
 	 * 数据点索引
 	 */
-	private List<Integer> dataIds;
+	private List<Integer> dataIds = new ArrayList<>();
 	
 	/**
 	 * 圈门数据索引
@@ -250,7 +250,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 		if(gate != null) {
 			gate.paint(g);
 			if (gate.isGenerated()) {
-				gatedIds = getGatedIds(pxData, realCoords, eData);
+				gatedIds = getGatedIds(pxData, realCoords, eData, dataIds);
 			}
 		}
 		transmit();// 将索引一直往下抛
@@ -260,6 +260,9 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 		this.dataSource = tubeModel;
 		if (tubeModel != null) {
 			tubeModel.addObserver(this);
+			for (int i = 0; i < dataSource.getEventsCount(); i++) {
+				dataIds.add(i);
+			}
 		}
 	}
 
@@ -343,7 +346,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 	 * @param pxData
 	 */
 	public abstract List<Integer> getGatedIds(ExperimentData pxData, ExperimentData realCoords, 
-			ExperimentData srcData);
+			ExperimentData srcData, List<Integer> dataIds);
 	
 	public List<Integer> getGatedIds() {
 		return gatedIds;

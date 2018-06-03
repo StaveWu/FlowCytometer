@@ -61,7 +61,7 @@ public class ProjectTreeUtils {
 		// 添加扩展名
 		DirTreeBean info = (DirTreeBean) node.getUserObject();
 		if (info.getNodeType() == NodeType.SETTINGS || info.getNodeType() == NodeType.WORKSHEET) {
-			relaPath += ".mv.db";
+			// 不用添加，因为数据库打开会自动添加后缀
 		}
 		else if (info.getNodeType() == NodeType.TUBE) {
 			relaPath += ".out";

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class DensityPlot extends Plot {
 	
 //	private static int count = 0;
@@ -133,13 +134,18 @@ public class DensityPlot extends Plot {
 
 	@Override
 	public List<Integer> getGatedIds(ExperimentData pxData, ExperimentData realCoords, 
-			ExperimentData srcData) {
+			ExperimentData srcData, List<Integer> dataIds) {
 		if(gate == null || pxData == null || realCoords == null || srcData == null) {
 			return null;
 		}
-		return gate.getGatedIndex(
+		List<Integer> pxGatedIds = gate.getGatedIndex(
 				pxData.getDataByName(axis[0].getName()), 
 				pxData.getDataByName(axis[1].getName()), origin);
+		List<Integer> res = new ArrayList<Integer>();
+		for (int i = 0; i < pxGatedIds.size(); i++) {
+			res.add(dataIds.get(pxGatedIds.get(i)));
+		}
+		return res;
 	}
 
 }

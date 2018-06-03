@@ -35,6 +35,7 @@ public class WorkSheetController implements IWorkSheetController {
 	public void loadWorkSheet(String relaPathname) {
 		try {
 			workSheetModel.init(relaPathname);
+			view.repaint();
 //			view.enableEdit();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -92,7 +93,6 @@ public class WorkSheetController implements IWorkSheetController {
 	public void createDotPlot(Point location) {
 		Plot dotPlot = new DotPlot();
 		dotPlot.setLocation(location);
-		dotPlot.setUid(workSheetModel.getNewPlotId());
 		workSheetModel.addPlot(dotPlot);
 		view.repaint();
 	}
@@ -101,7 +101,6 @@ public class WorkSheetController implements IWorkSheetController {
 	public void createHistogram(Point location) {
 		Plot histogram = new Histogram();
 		histogram.setLocation(location);
-		histogram.setUid(workSheetModel.getNewPlotId());
 		workSheetModel.addPlot(histogram);
 		view.repaint();
 	}
@@ -110,7 +109,6 @@ public class WorkSheetController implements IWorkSheetController {
 	public void createDensityPlot(Point location) {
 		Plot densityPlot = new DensityPlot();
 		densityPlot.setLocation(location);
-		densityPlot.setUid(workSheetModel.getNewPlotId());
 		workSheetModel.addPlot(densityPlot);
 		view.repaint();
 	}

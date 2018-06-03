@@ -6,8 +6,10 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("serial")
 public class DotPlot extends Plot {
 	
 	public DotPlot() {
@@ -72,13 +74,18 @@ public class DotPlot extends Plot {
 
 	@Override
 	public List<Integer> getGatedIds(ExperimentData pxData, ExperimentData realCoords, 
-			ExperimentData srcData) {
+			ExperimentData srcData, List<Integer> dataIds) {
 		if(gate == null || pxData == null || realCoords == null || srcData == null) {
 			return null;
 		}
-		return gate.getGatedIndex(
+		List<Integer> pxGatedIds = gate.getGatedIndex(
 				pxData.getDataByName(axis[0].getName()), 
 				pxData.getDataByName(axis[1].getName()), origin);
+		List<Integer> res = new ArrayList<Integer>();
+		for (int i = 0; i < pxGatedIds.size(); i++) {
+			res.add(dataIds.get(pxGatedIds.get(i)));
+		}
+		return res;
 	}
 
 }

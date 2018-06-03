@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import utils.ArrayUtils;
-
+@SuppressWarnings("serial")
 public class Histogram extends Plot {
 	
 	public Histogram() {
@@ -108,7 +107,7 @@ public class Histogram extends Plot {
 
 	@Override
 	public List<Integer> getGatedIds(ExperimentData pxData, ExperimentData realCoords, 
-			ExperimentData srcData) {
+			ExperimentData srcData, List<Integer> dataIds) {
 		if(gate == null || pxData == null || realCoords == null || srcData == null) {
 			return null;
 		}
@@ -119,28 +118,30 @@ public class Histogram extends Plot {
 		if(pxGatedIds == null || pxGatedIds.size() <= 0) {
 			return null;
 		}
-		List<Integer> res = new ArrayList<>();
-		//获取被圈出的数据中的最小值和最大值
+		// 获取真实的横轴值
 		double[] realx = realCoords.getDataByName(axis[0].getName());
 		if (realx == null || realx.length == 0) {
 			return null;
 		}
-		double[] tmpx = new double[pxGatedIds.size()];
-		for (int i = 0; i < tmpx.length; i++) {
-			tmpx[i] = realx[pxGatedIds.get(i)];
+		double[] realGatedx = new double[pxGatedIds.size()];
+		for (int i = 0; i < realGatedx.length; i++) {
+			realGatedx[i] = realx[pxGatedIds.get(i)];
 		}
-		double maxx = ArrayUtils.getMax(tmpx);
-		double minx = ArrayUtils.getMin(tmpx);
-		//确定原始数据的索引
+		// 获取原始数据的被圈id
 		double[] srcx = srcData.getDataByName(axis[0].getName());
 		if (srcx == null || srcx.length == 0) {
 			return null;
 		}
-		for (int i = 0; i < srcx.length; i++) {
-			if(srcx[i] >= minx && srcx[i] < maxx) {
-				res.add(i);
+		
+		List<Integer> res = new ArrayList<>();
+		for (int i = 0; i < realGatedx.length; i++) {
+			for (int j = 0; j < srcx.length; j++) {
+				if (srcx[j] == realGatedx[i]) {
+					res.add(dataIds.get(j));
+				}
 			}
 		}
+		
 		return res;
 	}
 

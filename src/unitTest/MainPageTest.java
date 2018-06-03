@@ -2,7 +2,7 @@ package unitTest;
 
 import mainPage.MainPageController;
 
-public class MainTest {
+public class MainPageTest {
 
 	public static void main(String[] args) {
 		new MainPageController();

@@ -8,11 +8,11 @@ import plot.Plot;
 @SuppressWarnings("serial")
 public class PlotContainer extends ArrowPaneContainer implements PlotContainerModelObserver {
 	
-	private PlotContainerModel model;
+	private IPlotContainerModel model;
 	
 	private PLotContainerObserver observer;
 	
-	public PlotContainer(PlotContainerModel model) {
+	public PlotContainer(IPlotContainerModel model) {
 		this.model = model;
 		model.addObserver(this);
 	}

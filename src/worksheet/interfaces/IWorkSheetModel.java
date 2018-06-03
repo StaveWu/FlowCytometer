@@ -1,7 +1,7 @@
 package worksheet.interfaces;
 
 import plot.Plot;
-import plotContainer.PlotContainerModel;
+import plotContainer.IPlotContainerModel;
 import tube.ITubeModel;
 
 public interface IWorkSheetModel {
@@ -14,9 +14,7 @@ public interface IWorkSheetModel {
 	
 	void save() throws Exception;
 	
-	PlotContainerModel getDelegate();
-	
-	int getNewPlotId();
+	IPlotContainerModel getDelegate();
 	
 	void addDataSource(ITubeModel tubeModel);
 
