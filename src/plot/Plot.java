@@ -52,6 +52,7 @@ import tube.TubeModelObserver;
 import utils.ArrayUtils;
 import utils.SwingUtils;
 
+@SuppressWarnings("serial")
 public abstract class Plot extends ArrowPane implements TubeModelObserver, PropertyChangeListener {
 	
 	/**
@@ -125,7 +126,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 	/**
 	 * 数据模型，plot显示的数据点从这里面取
 	 */
-	private ITubeModel tubeModel;
+	private ITubeModel dataSource;
 	
 	/**
 	 * 构造器
@@ -178,7 +179,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 	@Override
 	public void refresh() {
 		List<Integer> total = new ArrayList<>();
-		for (int i = 0; i < tubeModel.getEventsCount(); i++) {
+		for (int i = 0; i < dataSource.getEventsCount(); i++) {
 			total.add(i);
 		}
 		setDataIds(total);
@@ -256,25 +257,25 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 	}
 	
 	public void setTubeModel(ITubeModel tubeModel) {
-		this.tubeModel = tubeModel;
+		this.dataSource = tubeModel;
 		if (tubeModel != null) {
 			tubeModel.addObserver(this);
 		}
 	}
 
 	ExperimentData getEData() {
-		if (tubeModel == null || dataIds == null) {
+		if (dataSource == null || dataIds == null) {
 			return null;
 		}
 		ExperimentData res = new ExperimentData();
-		for (int i = 0; i < tubeModel.getFieldsCount(); i++) {		//i列
+		for (int i = 0; i < dataSource.getFieldsCount(); i++) {		//i列
 			double[] var = new double[dataIds.size()];				//每一列的变量
 			for (int j = 0; j < var.length; j++) {					//j行
 				int id = dataIds.get(j);							//第id行
-				Vector<Double> event = tubeModel.getEventAt(id);
+				Vector<Double> event = dataSource.getEventAt(id);
 				var[j] = event.get(i);
 			}
-			res.add(tubeModel.getFieldAt(i), var);
+			res.add(dataSource.getFieldAt(i), var);
 		}
 		return res;
 	}
@@ -622,12 +623,12 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 				}
 				else {
 					//显示轴菜单
-					if (tubeModel == null) {
+					if (dataSource == null) {
 						return;
 					}
 					for (int i = 0; i < axis.length; i++) {
 						if (isInAxisRegion(i, p)) {
-							showAxisRegionMenu(p, axis[i], tubeModel.getFields());
+							showAxisRegionMenu(p, axis[i], dataSource.getFields());
 							break;
 						}
 					}
@@ -800,9 +801,9 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 			File file = fc.getSelectedFile();
 			try {
 				// 初始化tubeModel并添加dataIds
-				tubeModel.initFromFcs(file);
+				dataSource.initFromFcs(file);
 				List<Integer> total = new ArrayList<>();
-				for (int i = 0; i < tubeModel.getEventsCount(); i++) {
+				for (int i = 0; i < dataSource.getEventsCount(); i++) {
 					total.add(i);
 				}
 				setDataIds(total);
@@ -827,9 +828,9 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 			//读取并导入数据
 			File file = fc.getSelectedFile();
 			try {
-				tubeModel.initFromTxt(file);
+				dataSource.initFromTxt(file);
 				List<Integer> total = new ArrayList<>();
-				for (int i = 0; i < tubeModel.getEventsCount(); i++) {
+				for (int i = 0; i < dataSource.getEventsCount(); i++) {
 					total.add(i);
 				}
 				setDataIds(total);

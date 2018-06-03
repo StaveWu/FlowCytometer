@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -20,7 +19,8 @@ import plotContainer.PlotContainer;
 import worksheet.interfaces.IWorkSheetController;
 import worksheet.interfaces.IWorkSheetModel;
 
-public class WorkSheetView extends JPanel implements PLotContainerObserver, MouseListener {
+@SuppressWarnings("serial")
+public class WorkSheetView extends JPanel implements PLotContainerObserver {
 	
 	private IWorkSheetModel model;
 	private IWorkSheetController controller;
@@ -29,7 +29,7 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver, Mous
 	private JToolBar toolBar;
 	private JButton saveButton;
 	
-	private boolean showPopupMenu = false;
+	private boolean showPopupMenu = true;
 	
 	public WorkSheetView(IWorkSheetModel model, IWorkSheetController controller) {
 		this.model = model;
@@ -63,7 +63,6 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver, Mous
 		 * °´Å¥
 		 */
 		saveButton = new JButton("±£´æ");
-		saveButton.addMouseListener(this);
 		toolBar.add(saveButton);
 		
 		this.add(toolBar, BorderLayout.NORTH);
@@ -100,35 +99,5 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver, Mous
 	public void notifyDataInputed() {
 		controller.notifyObservers(
 				new WorkSheetEvent(controller, WorkSheetEvent.DataInputFromOutside));
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 }

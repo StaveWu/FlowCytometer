@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import plot.Plot;
 
+@SuppressWarnings("serial")
 public class DataRegionPopupMenu extends PopupMenuX {
 	
 	private Plot plot;

@@ -20,31 +20,35 @@ import worksheet.interfaces.IWorkSheetModel;
 public class WorkSheetController implements IWorkSheetController {
 	
 	private IWorkSheetModel workSheetModel;
-	private ITubeModel tubeModel;
 	private WorkSheetView view;
 	
 	private List<WorkSheetObserver> observers = new ArrayList<>();
 	
-	public WorkSheetController(IWorkSheetModel model, ITubeModel tubeModel) {
+	public WorkSheetController(IWorkSheetModel model) {
 		this.workSheetModel = model;
-		this.tubeModel = tubeModel;
 		view = new WorkSheetView(model, this);
 		view.initializeComponents();
-		view.disableEdit();
+//		view.disableEdit();
 	}
 
 	@Override
 	public void loadWorkSheet(String relaPathname) {
 		try {
 			workSheetModel.init(relaPathname);
-			workSheetModel.addTubeModel(tubeModel);
-			view.enableEdit();
+//			view.enableEdit();
 		} catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "加载WorkSheet失败！异常信息：" + e.getMessage());
 		}
 		
 	}
+	
+	
+	@Override
+	public void addDataSource(ITubeModel data) {
+		workSheetModel.addDataSource(data);
+	}
+	
 	
 	@Override
 	public JPanel getView() {
@@ -87,7 +91,6 @@ public class WorkSheetController implements IWorkSheetController {
 	@Override
 	public void createDotPlot(Point location) {
 		Plot dotPlot = new DotPlot();
-		dotPlot.setTubeModel(tubeModel);
 		dotPlot.setLocation(location);
 		dotPlot.setUid(workSheetModel.getNewPlotId());
 		workSheetModel.addPlot(dotPlot);
@@ -97,7 +100,6 @@ public class WorkSheetController implements IWorkSheetController {
 	@Override
 	public void createHistogram(Point location) {
 		Plot histogram = new Histogram();
-		histogram.setTubeModel(tubeModel);
 		histogram.setLocation(location);
 		histogram.setUid(workSheetModel.getNewPlotId());
 		workSheetModel.addPlot(histogram);
@@ -107,7 +109,6 @@ public class WorkSheetController implements IWorkSheetController {
 	@Override
 	public void createDensityPlot(Point location) {
 		Plot densityPlot = new DensityPlot();
-		densityPlot.setTubeModel(tubeModel);
 		densityPlot.setLocation(location);
 		densityPlot.setUid(workSheetModel.getNewPlotId());
 		workSheetModel.addPlot(densityPlot);

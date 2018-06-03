@@ -1,6 +1,5 @@
 package worksheet;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class WorkSheetModel implements IWorkSheetModel {
 
 	@Override
 	public void init(String relaPathname) throws Exception {
-		clear();
+		delegate.clear();
 		this.pathname = FCMSettings.getWorkSpacePath() + relaPathname;
 		if (!DAOFactory.getIPlotsDAOInstance(pathname).isExist(worksheetTableName)) {
 			DAOFactory.getIPlotsDAOInstance(pathname).createTable(worksheetTableName);
@@ -59,27 +58,7 @@ public class WorkSheetModel implements IWorkSheetModel {
 	 */
 	@Override
 	public int getNewPlotId() {
-		int id = 0;
-		for (int i = 0; i < delegate.getPlotCount(); i++) {
-			Plot plot = delegate.getPlotAt(i);
-			if (plot == null) {
-				continue;
-			}
-			if (plot.getUid() >= id) {
-				id = plot.getUid() + 1;
-			}
-		}
-		return id;
-	}
-	
-	/**
-	 * Çå³ý
-	 */
-	public void clear() {
-		for (int i = delegate.getPlotCount() - 1; i >= 0; i--) {
-			Plot plot = delegate.getPlotAt(i);
-			removePlot(plot);
-		}
+		return delegate.getNextUid();
 	}
 
 	@Override
@@ -94,11 +73,7 @@ public class WorkSheetModel implements IWorkSheetModel {
 
 	@Override
 	public void save() throws Exception {
-		List<Plot> plots = new ArrayList<>();
-		for (int i = 0; i < delegate.getPlotCount(); i++) {
-			plots.add(delegate.getPlotAt(i));
-		}
-		DAOFactory.getIPlotsDAOInstance(pathname).addAll(worksheetTableName, plots);
+		DAOFactory.getIPlotsDAOInstance(pathname).addAll(worksheetTableName, delegate.getPlots());
 	}
 
 	@Override
@@ -107,11 +82,8 @@ public class WorkSheetModel implements IWorkSheetModel {
 	}
 
 	@Override
-	public void addTubeModel(ITubeModel tubeModel) {
-		for (int i = 0; i < delegate.getPlotCount(); i++) {
-			Plot plot = delegate.getPlotAt(i);
-			plot.setTubeModel(tubeModel);
-		}
+	public void addDataSource(ITubeModel data) {
+		delegate.addDataSource(data);
 	}
 
 }

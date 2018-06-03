@@ -12,6 +12,12 @@ import javax.swing.JPanel;
 
 import utils.SwingUtils;
 
+/**
+ * 提供一个箭头描绘的环境，没有上下文菜单
+ * @author wteng
+ *
+ */
+@SuppressWarnings("serial")
 public class ArrowPaneContainer extends JPanel implements ArrowPaneObserver {
 	
 	private List<ArrowPane> panes = new ArrayList<>();

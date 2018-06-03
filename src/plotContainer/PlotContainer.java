@@ -5,6 +5,7 @@ import java.awt.Component;
 import plot.ArrowPaneContainer;
 import plot.Plot;
 
+@SuppressWarnings("serial")
 public class PlotContainer extends ArrowPaneContainer implements PlotContainerModelObserver {
 	
 	private PlotContainerModel model;

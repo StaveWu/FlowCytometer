@@ -18,6 +18,6 @@ public interface IWorkSheetModel {
 	
 	int getNewPlotId();
 	
-	void addTubeModel(ITubeModel tubeModel);
+	void addDataSource(ITubeModel tubeModel);
 
 }

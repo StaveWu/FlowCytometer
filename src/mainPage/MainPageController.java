@@ -82,7 +82,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 	
 	private JPanel loadWorkSheet() {
 		IWorkSheetModel workSheetModel = new WorkSheetModel();
-		workSheetController = new WorkSheetController(workSheetModel, tubeModel);
+		workSheetController = new WorkSheetController(workSheetModel);
 		workSheetController.addObserver(this);
 		return workSheetController.getView();
 	}
@@ -105,6 +105,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 			else if (ev.getActionCommand() == DirTreeEvent.OPEN_TUBE) {
 				// 初始化试管数据
 				tubeModel.initFromSrc(ev.getRelaPath());
+				workSheetController.addDataSource(tubeModel);
 			}
 		}
 	}

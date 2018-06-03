@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 
 import mainPage.events.WorkSheetEvent;
 import mainPage.interfaces.WorkSheetObserver;
+import tube.ITubeModel;
 
 public interface IWorkSheetController {
 	
@@ -18,6 +19,8 @@ public interface IWorkSheetController {
 	void createHistogram(Point location);
 	
 	void createDensityPlot(Point location);
+	
+	void addDataSource(ITubeModel data);
 	
 	JPanel getView();
 	
