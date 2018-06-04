@@ -1,6 +1,5 @@
 package worksheet;
 
-import mainPage.FCMSettings;
 import plot.Plot;
 import plotContainer.IPlotContainerModel;
 import plotContainer.PlotContainerModel;
@@ -19,8 +18,8 @@ public class WorkSheetModel implements IWorkSheetModel {
 	}
 
 	@Override
-	public void init(String relaPathname) throws Exception {
-		this.pathname = FCMSettings.getWorkSpacePath() + relaPathname;
+	public void init(String pathname) throws Exception {
+		this.pathname = pathname;
 		delegate.loadPlots(pathname, worksheetTableName);
 	}
 

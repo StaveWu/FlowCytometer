@@ -10,7 +10,6 @@ import javax.swing.table.DefaultTableModel;
 import dao.DAOFactory;
 import dao.GroupCondition;
 import dao.beans.ParamSettingsBean;
-import mainPage.FCMSettings;
 import paramSettings.interfaces.ITableModel;
 import paramSettings.interfaces.ParamModelObserver;
 
@@ -54,10 +53,10 @@ public class ParamModel implements ITableModel {
 	}
 	
 	@Override
-	public void init(String relaPathname) throws Exception {
+	public void init(String pathname) throws Exception {
 		clear();
 		// 从数据库中读取指定表，如果不存在，则创建表
-		this.pathname = FCMSettings.getWorkSpacePath() + relaPathname;
+		this.pathname = pathname;
 		if (!DAOFactory.getIParamSettingsDAOInstance(pathname).isExist(settingsTableName)) {
 			DAOFactory.getIParamSettingsDAOInstance(pathname).createTable(settingsTableName);
 		}

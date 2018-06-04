@@ -78,9 +78,14 @@ public class DotPlot extends Plot {
 		if(gate == null || pxData == null || realCoords == null || srcData == null) {
 			return null;
 		}
+		
 		List<Integer> pxGatedIds = gate.getGatedIndex(
 				pxData.getDataByName(axis[0].getName()), 
 				pxData.getDataByName(axis[1].getName()), origin);
+		if(pxGatedIds == null || pxGatedIds.size() <= 0) {
+			return null;
+		}
+		
 		List<Integer> res = new ArrayList<Integer>();
 		for (int i = 0; i < pxGatedIds.size(); i++) {
 			res.add(dataIds.get(pxGatedIds.get(i)));

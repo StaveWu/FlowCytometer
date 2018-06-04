@@ -25,7 +25,7 @@ public class PlotContainer extends ArrowPaneContainer implements PlotContainerMo
 
 	@Override
 	public void addPlot(Plot plot) {
-		add(plot);
+		super.add(plot);
 	}
 	
 	public void notifyDataInputed() {

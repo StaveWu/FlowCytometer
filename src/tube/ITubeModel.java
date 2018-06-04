@@ -1,19 +1,14 @@
 package tube;
 
-import java.io.File;
 import java.util.Vector;
 
 import javax.swing.table.TableModel;
 
 public interface ITubeModel {
 	
-	void initFromSrc(String pathname);
-	
-	void initFromTxt(File file) throws Exception;
-	
-	void initFromFcs(File file) throws Exception;
+	void init(String pathname) throws Exception;
 
-	void save(File file) throws Exception;
+	void save() throws Exception;
 	
 	void addField(String field);
 	

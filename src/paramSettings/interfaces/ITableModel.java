@@ -6,7 +6,7 @@ import javax.swing.table.TableModel;
 
 public interface ITableModel {
 	
-	void init(String relaPathname) throws Exception;
+	void init(String pathname) throws Exception;
 	
 	void addRow(Object[] rowData) throws Exception;
 	

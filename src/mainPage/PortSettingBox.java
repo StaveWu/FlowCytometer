@@ -18,18 +18,22 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 
 import device.CommDeviceType;
+import device.ICommDevice;
 import device.SerialTool;
+import utils.SwingUtils;
 
 @SuppressWarnings("serial")
 public class PortSettingBox extends JFrame implements ActionListener {
 	
 	private JTabbedPane tabbedPane;
-	private JButton btnApply;
-	private JButton btnCancel;
+	private JButton btnConnect;
+	private JButton btnDisconnect;
 	private JRadioButton rbtnSerialPort;
 	private JRadioButton rbtnUsb;
 	private JComboBox<String> combo1;
 	private JComboBox<Integer> combo2;
+	
+	private ICommDevice device;
 	
 	/**
 	 * Create the application.
@@ -79,23 +83,23 @@ public class PortSettingBox extends JFrame implements ActionListener {
 		
 		
 		/*
-		 * 确定按钮 
+		 * 连接按钮 
 		 */
-		btnApply = new JButton("确定");
-		btnApply.addActionListener(this);
-		btnApply.setPreferredSize(new Dimension(80, 26));
+		btnConnect = new JButton("连接");
+		btnConnect.addActionListener(this);
+		btnConnect.setPreferredSize(new Dimension(80, 26));
 		
 		/*
-		 * 取消按钮
+		 * 断开按钮
 		 */
-		btnCancel = new JButton("取消");
-		btnCancel.addActionListener(this);
-		btnCancel.setPreferredSize(new Dimension(80, 26));
+		btnDisconnect = new JButton("断开");
+		btnDisconnect.addActionListener(this);
+		btnDisconnect.setPreferredSize(new Dimension(80, 26));
 		
 		JPanel btnPanel = new JPanel();
 		btnPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 10));
-		btnPanel.add(btnApply);
-		btnPanel.add(btnCancel);
+		btnPanel.add(btnConnect);
+		btnPanel.add(btnDisconnect);
 		
 		this.getContentPane().add(btnPanel);
 		this.pack();
@@ -156,14 +160,21 @@ public class PortSettingBox extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnApply) {
+		if (e.getSource() == btnConnect) {
 			// 保存设置
 			saveSerialPortConfig();
 			saveUsbConfig();
 			saveSelectedCommDevice();
-			this.dispose();
+			try {
+				connectDevice();
+				this.dispose();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				SwingUtils.showErrorDialog(this, "连接设备失败！");
+			}
 		}
-		else if (e.getSource() == btnCancel) {
+		else if (e.getSource() == btnDisconnect) {
+			disconnectDevice();
 			this.dispose();
 		}
 		else {
@@ -187,8 +198,21 @@ public class PortSettingBox extends JFrame implements ActionListener {
 		else if (rbtnUsb.isSelected()) {
 			FCMSettings.setCommDeviceType(CommDeviceType.USB);
 		}
-		else {
-			// duplicate
+	}
+	
+	private void connectDevice() throws Exception {
+		if (rbtnSerialPort.isSelected()) {
+			device = SerialTool.getInstance();
+			device.open();
+		}
+		else if (rbtnUsb.isSelected()) {
+			// 还没写
+		}
+	}
+	
+	private void disconnectDevice() {
+		if (device != null) {
+			device.close();
 		}
 	}
 	

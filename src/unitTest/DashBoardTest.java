@@ -1,7 +1,6 @@
 package unitTest;
 
 import java.awt.BorderLayout;
-import java.util.TooManyListenersException;
 
 import javax.swing.JFrame;
 
@@ -14,9 +13,10 @@ import utils.SwingUtils;
 
 public class DashBoardTest implements SerialPortEventListener {
 	
-	public static void main(String[] args) throws TooManyListenersException {
+	public static void main(String[] args) throws Exception {
 		DashBoardTest t = new DashBoardTest();
 		SerialTool.getInstance().addEventListener(t);
+		SerialTool.getInstance().open();
 		
 		JFrame frame = new JFrame("");
 		frame.setBounds(50, 50, 450, 300);

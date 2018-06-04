@@ -9,7 +9,9 @@ public class DashBoardModel {
 	
 	private ICommDevice device;
 	
-	public DashBoardModel() {}
+	public DashBoardModel() {
+		
+	}
 	
 	/**
 	 * 控制硬件开始采样
@@ -17,14 +19,18 @@ public class DashBoardModel {
 	 */
 	public void startSampling() throws Exception {
 		confirmCurrentSelectedDevice();
-		device.open();
+		String message = "开始采样";
+		device.write(message.getBytes());
 	}
 	
 	/**
 	 * 控制硬件停止采样
+	 * @throws Exception 
 	 */
-	public void stopSampling() {
-		device.close();
+	public void stopSampling() throws Exception {
+		confirmCurrentSelectedDevice();
+		String message = "停止采样";
+		device.write(message.getBytes());
 	}
 	
 	private void confirmCurrentSelectedDevice() {

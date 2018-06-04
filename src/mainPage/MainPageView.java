@@ -10,21 +10,18 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import menu.MainPageMenuBar;
-import tube.ITubeModel;
-import tube.TubeView;
 import utils.SwingUtils;
 
 @SuppressWarnings("serial")
 public class MainPageView extends JFrame {
 	
 	private MainPageController controller;
-	private ITubeModel tubeModel;
 	
 	private JPanel dirTree;
 	private JPanel dashBoard;
 	private JPanel paramSettings;
 	private JPanel workSheet;
-	private JPanel tubeData;
+	private JPanel tubeView;
 	
 	private JPanel leftPanel;
 	private JPanel rightPanel;
@@ -34,8 +31,7 @@ public class MainPageView extends JFrame {
 	private JMenuBar mainMenuBar;
 	
 	
-	public MainPageView(MainPageController controller, ITubeModel tubeModel) {
-		this.tubeModel = tubeModel;
+	public MainPageView(MainPageController controller) {
 		this.controller = controller;
 	}
 	
@@ -81,8 +77,8 @@ public class MainPageView extends JFrame {
 		/*
 		 * 添加tube数据表
 		 */
-		tubeData = new TubeView(tubeModel);
-		subLeft.add(SwingUtils.createPanelForComponent(tubeData, "Tube数据"));
+		tubeView.setPreferredSize(new Dimension(450, 200));
+		subLeft.add(SwingUtils.createPanelForComponent(tubeView, "Tube数据"));
 		
 		/*
 		 * 添加workSheet
@@ -120,4 +116,7 @@ public class MainPageView extends JFrame {
 		this.workSheet = workSheet;
 	}
 	
+	public void setTubeView(JPanel tubeView) {
+		this.tubeView = tubeView;
+	}
 }

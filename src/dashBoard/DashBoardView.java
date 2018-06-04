@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 
 import utils.SwingUtils;
 
+@SuppressWarnings("serial")
 public class DashBoardView extends JPanel implements ActionListener, ItemListener {
 	
 	private DashBoardController controller;
@@ -27,8 +28,8 @@ public class DashBoardView extends JPanel implements ActionListener, ItemListene
 	private JLabel limitLabel;
 	private JComboBox<String> comboBox;
 	private JCheckBox checkBox;
-	private JButton startBtn;
-	private JButton stopBtn;
+	private JButton btnStart;
+	private JButton btnStop;
 	private JLabel unitLabel;
 	private JTextField tf;
 	private JLabel statusLabel;
@@ -84,21 +85,21 @@ public class DashBoardView extends JPanel implements ActionListener, ItemListene
 		/*
 		 * 开始采样按钮
 		 */
-		startBtn = new JButton("开始采样");
-		startBtn.addActionListener(this);
+		btnStart = new JButton("开始采样");
+		btnStart.addActionListener(this);
 		/*
 		 * 停止采样按钮
 		 */
-		stopBtn = new JButton("停止采样");
-		stopBtn.addActionListener(this);
+		btnStop = new JButton("停止采样");
+		btnStop.addActionListener(this);
 		
 		/*
 		 * 按钮面板
 		 */
 		JPanel btnPanel = new JPanel();
 		btnPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 10));
-		btnPanel.add(startBtn);
-		btnPanel.add(stopBtn);
+		btnPanel.add(btnStart);
+		btnPanel.add(btnStop);
 		this.add(SwingUtils.createPanelForComponent(btnPanel, "操作"));
 		
 		/*
@@ -136,19 +137,19 @@ public class DashBoardView extends JPanel implements ActionListener, ItemListene
 	}
 	
 	public void enableStartButton() {
-		startBtn.setEnabled(true);
+		btnStart.setEnabled(true);
 	}
 	
 	public void disableStartButton() {
-		startBtn.setEnabled(false);
+		btnStart.setEnabled(false);
 	}
 	
 	public void enableStopButton() {
-		stopBtn.setEnabled(true);
+		btnStop.setEnabled(true);
 	}
 	
 	public void disableStopButton() {
-		stopBtn.setEnabled(false);
+		btnStop.setEnabled(false);
 	}
 	
 	public boolean isSelectTimeCondition() {
@@ -161,9 +162,10 @@ public class DashBoardView extends JPanel implements ActionListener, ItemListene
 
 	@Override
 	public void actionPerformed(ActionEvent ev) {
-		if (ev.getSource() == startBtn) {
+		if (ev.getSource() == btnStart) {
 			controller.startSampling();
-		} else if (ev.getSource() == stopBtn) {
+		} 
+		else if (ev.getSource() == btnStop) {
 			controller.stopSampling();
 		}
 	}

@@ -258,8 +258,8 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 	
 	public void setTubeModel(ITubeModel tubeModel) {
 		this.dataSource = tubeModel;
-		if (tubeModel != null) {
-			tubeModel.addObserver(this);
+		if (dataSource != null) {
+			dataSource.addObserver(this);
 			for (int i = 0; i < dataSource.getEventsCount(); i++) {
 				dataIds.add(i);
 			}
@@ -804,7 +804,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 			File file = fc.getSelectedFile();
 			try {
 				// 初始化tubeModel并添加dataIds
-				dataSource.initFromFcs(file);
+				dataSource.init(file.getAbsolutePath());
 				List<Integer> total = new ArrayList<>();
 				for (int i = 0; i < dataSource.getEventsCount(); i++) {
 					total.add(i);
@@ -831,7 +831,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 			//读取并导入数据
 			File file = fc.getSelectedFile();
 			try {
-				dataSource.initFromTxt(file);
+				dataSource.init(file.getAbsolutePath());
 				List<Integer> total = new ArrayList<>();
 				for (int i = 0; i < dataSource.getEventsCount(); i++) {
 					total.add(i);

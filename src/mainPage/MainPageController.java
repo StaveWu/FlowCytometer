@@ -1,9 +1,14 @@
 package mainPage;
 
+import java.util.TooManyListenersException;
+
 import javax.swing.JPanel;
 
 import dashBoard.DashBoardController;
 import dashBoard.DashBoardModel;
+import device.SerialTool;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
 import mainPage.events.DashBoardEvent;
 import mainPage.events.DirTreeEvent;
 import mainPage.events.ParamSettingsEvent;
@@ -20,7 +25,9 @@ import projectTree.IProjectTreeController;
 import projectTree.IProjectTreeModel;
 import projectTree.ProjectTreeController;
 import projectTree.ProjectTreeModel;
+import tube.ITubeController;
 import tube.ITubeModel;
+import tube.TubeController;
 import tube.TubeModel;
 import utils.SwingUtils;
 import worksheet.WorkSheetController;
@@ -29,7 +36,7 @@ import worksheet.interfaces.IWorkSheetController;
 import worksheet.interfaces.IWorkSheetModel;
 
 public class MainPageController implements DirTreeObserver, DashBoardObserver, 
-	WorkSheetObserver, ParamSettingsObserver {
+	WorkSheetObserver, ParamSettingsObserver, SerialPortEventListener {
 	
 	private MainPageView view;
 	
@@ -37,26 +44,31 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 	private IParamController paramController;
 	private DashBoardController dashBoardController;
 	private IWorkSheetController workSheetController;
-	
-	private ITubeModel tubeModel;
+	private ITubeController tubeController;
 	
 	public MainPageController() {
-		tubeModel = new TubeModel();
-		view = new MainPageView(this, tubeModel);
-		// 加载项目树
+		view = new MainPageView(this);
+		// 加载各个子控件
 		try {
 			view.setDirTree(loadDirTree());
 		} catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "初始化项目树失败！异常信息：模型时无法连接数据库");
 		}
-		// 加载参数列表
 		view.setParamSettings(loadParamSettings());
-		// 加载dashboard
 		view.setDashBoard(loadDashBoard());
-		// 加载worksheet
 		view.setWorkSheet(loadWorkSheet());	
+		view.setTubeView(loadTubeView());
+		
 		view.createGUI();
+		
+		// 添加串口监听
+		try {
+			SerialTool.getInstance().addEventListener(this);
+		} catch (TooManyListenersException e) {
+			e.printStackTrace();
+			SwingUtils.showErrorDialog(view, "添加串口监听失败！请检查串口是否被占用");
+		}
 	}
 	
 	private JPanel loadDirTree() throws Exception {
@@ -86,26 +98,33 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 		workSheetController.addObserver(this);
 		return workSheetController.getView();
 	}
+	
+	private JPanel loadTubeView() {
+		ITubeModel tubeModel = new TubeModel();
+		tubeController = new TubeController(tubeModel);
+		return tubeController.getView();
+	}
 
 	@Override
 	public void dirTreeUpdated(DirTreeEvent ev) {
 		if (ev.getSource() == dirTreeController) {
+			String pathname = FCMSettings.getWorkSpacePath() + ev.getRelaPath();
 			if (ev.getActionCommand() == DirTreeEvent.OPEN_SETTINGS) {
 				// 初始化参数设置
-				paramController.loadSettings(ev.getRelaPath());
+				paramController.loadSettings(pathname);
 			}
 			else if (ev.getActionCommand() == DirTreeEvent.OPEN_WORKSHEET) {
 				// 初始化worksheet
 				try {
-					workSheetController.loadWorkSheet(ev.getRelaPath());
+					workSheetController.loadWorkSheet(pathname);
 				} catch (Exception e) {
 					SwingUtils.showErrorDialog(view, "初始化WorkSheet失败！\r\n异常信息：\r\n" + e.getMessage());
 				}
 			} 
 			else if (ev.getActionCommand() == DirTreeEvent.OPEN_TUBE) {
 				// 初始化试管数据
-				tubeModel.initFromSrc(ev.getRelaPath());
-				workSheetController.addDataSource(tubeModel);
+				tubeController.loadData(pathname);
+				workSheetController.addDataSource(tubeController.getData());
 			}
 		}
 	}
@@ -117,7 +136,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 			if (ev.getActionCommand() == ParamSettingsEvent.ADD
 					|| ev.getActionCommand() == ParamSettingsEvent.REMOVE
 					|| ev.getActionCommand() == ParamSettingsEvent.UPDATE) {
-				tubeModel.setFields(ev.getDataNames());
+				tubeController.setFields(ev.getDataNames());
 			}
 		}
 	}
@@ -143,7 +162,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 		}
 	}
 	
-	///////////// 菜单命令 /////////////
+	///////////// 菜单命令 start /////////////
 	
 	public void ImportProject() {
 		
@@ -161,12 +180,30 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 		System.exit(0);
 	}
 	
+	public void CommDeviceSetting() {
+		new PortSettingBox();
+	}
+	
 	public void Version() {
-		// 弹出版本信息窗口
+		
 	}
 	
 	public void Help() {
 		
+	}
+	
+	///////////// 菜单命令 end ///////////////
+
+	@Override
+	public void serialEvent(SerialPortEvent e) {
+		if (e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+			try {
+				System.out.println(new String(SerialTool.getInstance().read()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				SwingUtils.showErrorDialog(view, "串口解析数据出错");
+			}
+		}
 	}
 
 }

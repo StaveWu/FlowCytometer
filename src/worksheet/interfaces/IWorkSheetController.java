@@ -10,7 +10,7 @@ import tube.ITubeModel;
 
 public interface IWorkSheetController {
 	
-	void loadWorkSheet(String relaPathname);
+	void loadWorkSheet(String pathname);
 	
 	void save(Point location);
 	

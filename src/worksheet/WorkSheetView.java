@@ -82,22 +82,6 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver {
 		});
 		toolBar.add(saveButton);
 		
-//		JButton btnload = new JButton("load");
-//		btnload.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				try {
-//					model.init("");
-//					repaint();
-//				} catch (Exception e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//			}
-//		});
-//		toolBar.add(btnload);
-		
 		this.add(toolBar, BorderLayout.NORTH);
 	}
 	

@@ -10,7 +10,7 @@ import mainPage.interfaces.ParamSettingsObserver;
 
 public interface IParamController {
 	
-	void loadSettings(String relaPath);
+	void loadSettings(String pathname);
 	
 	void addRow();
 	

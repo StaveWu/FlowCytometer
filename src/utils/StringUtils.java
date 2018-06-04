@@ -49,5 +49,16 @@ public class StringUtils {
 		}
 		return path.substring(0, path.indexOf(getTail(path)) - 1);
 	}
+	
+	public static String getExtension(String pathname) {
+		if (pathname == null) {
+			return null;
+		}
+		String[] s = pathname.split("\\.");
+		if (s.length < 2) {
+			return null;
+		}
+		return s[s.length - 1];
+	}
 
 }

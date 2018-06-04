@@ -6,7 +6,7 @@ import tube.ITubeModel;
 
 public interface IWorkSheetModel {
 	
-	void init(String relaPathname) throws Exception;
+	void init(String pathname) throws Exception;
 	
 	void addPlot(Plot plot);
 	

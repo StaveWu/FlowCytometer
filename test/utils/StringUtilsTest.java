@@ -26,5 +26,10 @@ class StringUtilsTest {
 	void testGetParentPath() {
 		assertEquals("C://A", StringUtils.getParentPath("C://A/B"));
 	}
+	
+	@Test
+	void testGetExtension() {
+		assertEquals("txt", StringUtils.getExtension("C://A/B.txt"));
+	}
 
 }

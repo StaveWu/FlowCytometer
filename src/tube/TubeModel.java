@@ -13,10 +13,14 @@ import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import utils.StringUtils;
+
 
 public class TubeModel implements ITubeModel {
 	
 	private DefaultTableModel delegate;
+	
+	private String pathname;
 	
 	private List<TubeModelObserver> observers = new ArrayList<>();
 	
@@ -37,15 +41,21 @@ public class TubeModel implements ITubeModel {
 	}
 
 	@Override
-	public void initFromSrc(String pathname) {
+	public void init(String pathname) throws Exception {
 		clear();
-		
+		this.pathname = pathname;
+		if (StringUtils.getExtension(pathname).equals("txt") 
+				|| StringUtils.getExtension(pathname).equals("out")) {
+			initFromTxt(pathname);
+		}
+		else if (StringUtils.getExtension(pathname).equals("fcs")) {
+			initFromFcs(pathname);
+		}
 	}
 
-	@Override
-	public void initFromTxt(File file) throws Exception {
+	private void initFromTxt(String pathname) throws Exception {
 		clear();
-		BufferedReader in = new BufferedReader(new FileReader(file));
+		BufferedReader in = new BufferedReader(new FileReader(new File(pathname)));
 		String s;
 		int i = 0;
 		while((s = in.readLine()) != null) {
@@ -68,18 +78,17 @@ public class TubeModel implements ITubeModel {
 		notifyObservers();
 	}
 	
-	@Override
-	public void initFromFcs(File file) throws Exception {
+	private void initFromFcs(String pathname) throws Exception {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	@Override
-	public void save(File file) throws Exception {
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+	public void save() throws Exception {
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(new File(pathname))));
 		if (isEmpty()) {
 			out.print("");
-		}else {
+		} else {
 			// 打印数据名
 			for (int i = 0; i < getFieldsCount(); i++) {
 				out.print(getFieldAt(i));
@@ -87,6 +96,7 @@ public class TubeModel implements ITubeModel {
 					out.print("\t");
 				}
 			}
+			out.println();
 			// 打印数据
 			for (int j = 0; j < getEventsCount(); j++) {			//j行
 				for (int k = 0; k < getFieldsCount(); k++) {		//k列
@@ -214,5 +224,6 @@ public class TubeModel implements ITubeModel {
 	public TableModel getDelegate() {
 		return delegate;
 	}
+
 
 }

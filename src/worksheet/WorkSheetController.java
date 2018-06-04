@@ -32,9 +32,9 @@ public class WorkSheetController implements IWorkSheetController {
 	}
 
 	@Override
-	public void loadWorkSheet(String relaPathname) {
+	public void loadWorkSheet(String pathname) {
 		try {
-			workSheetModel.init(relaPathname);
+			workSheetModel.init(pathname);
 			view.repaint();
 //			view.enableEdit();
 		} catch (Exception e) {

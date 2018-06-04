@@ -73,9 +73,9 @@ public class ParamController implements IParamController, ParamModelObserver {
 	}
 	
 	@Override
-	public void loadSettings(String relaPath) {
+	public void loadSettings(String pathname) {
 		try {
-			tableModel.init(relaPath);
+			tableModel.init(pathname);
 			view.displayButtons();
 			notifyObservers(new ParamSettingsEvent(this, 
 					ParamSettingsEvent.UPDATE, tableModel.getDataNames()));

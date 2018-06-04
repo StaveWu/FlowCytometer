@@ -26,21 +26,23 @@ public class DashBoardController {
 	public void startSampling() {
 		try {
 			model.startSampling();
-			view.disableStartButton();
-			view.enableStopButton();
 			view.setStatusStart();
 		} catch (Exception e) {
 			e.printStackTrace();
-			SwingUtils.showErrorDialog(view, "连接设备失败！请检查通讯设置是否正确以及端口是否被占用");
+			SwingUtils.showErrorDialog(view, "发送数据失败！" + e.toString());
 		}
 		notifyDashBoardObservers(new DashBoardEvent(this, DashBoardEvent.START_SAMPLING));
 	}
 	
 	public void stopSampling() {
-		model.stopSampling();
-		view.disableStopButton();
-		view.enableStartButton();
-		view.setStatusStop();
+		try {
+			model.stopSampling();
+			view.setStatusStop();
+		} catch (Exception e) {
+			e.printStackTrace();
+			SwingUtils.showErrorDialog(view, "发送数据失败！" + e.toString());
+		}
+		
 	}
 	
 	public void checkSelected() {
