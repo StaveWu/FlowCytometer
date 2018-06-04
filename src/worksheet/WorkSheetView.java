@@ -18,16 +18,16 @@ import javax.swing.JToolBar;
 
 import mainPage.events.WorkSheetEvent;
 import menu.ContainerPopupMenu;
+import plot.Plot;
 import plotContainer.PLotContainerObserver;
 import plotContainer.PlotContainer;
+import tube.ITubeModel;
 import utils.SwingUtils;
 import worksheet.interfaces.IWorkSheetController;
-import worksheet.interfaces.IWorkSheetModel;
 
 @SuppressWarnings("serial")
 public class WorkSheetView extends JPanel implements PLotContainerObserver {
 	
-	private IWorkSheetModel model;
 	private IWorkSheetController controller;
 	
 	private PlotContainer plotContainer;
@@ -36,8 +36,7 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver {
 	
 	private boolean showPopupMenu = true;
 	
-	public WorkSheetView(IWorkSheetModel model, IWorkSheetController controller) {
-		this.model = model;
+	public WorkSheetView(IWorkSheetController controller) {
 		this.controller = controller;
 	}
 	
@@ -48,7 +47,7 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver {
 		/*
 		 * 图容器
 		 */
-		plotContainer = new PlotContainer(model.getDelegate());
+		plotContainer = new PlotContainer();
 		plotContainer.addObserver(this);
 		plotContainer.addMouseListener(new PopupMenuListener());
 		plotContainer.setPreferredSize(new Dimension(500, 3000));
@@ -73,7 +72,7 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					model.save();
+					save();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					SwingUtils.showErrorDialog(WorkSheetView.this, "保存失败！" + e1.getMessage());
@@ -128,5 +127,27 @@ public class WorkSheetView extends JPanel implements PLotContainerObserver {
 	public void notifyDataInputed() {
 		controller.notifyObservers(
 				new WorkSheetEvent(controller, WorkSheetEvent.DataInputFromOutside));
+	}
+	
+	
+	///////// plotContainer Controller ///////////
+	// 因为model分不出来，所以把Controller写在这里
+	
+	public void loadPlots(String pathname) throws Exception {
+		plotContainer.loadPlots(pathname);
+		repaint();
+	}
+	
+	public void save() throws Exception {
+		plotContainer.savePlots();
+	}
+	
+	public void addPlot(Plot plot) {
+		plotContainer.add(plot);
+		repaint();
+	}
+	
+	public void addDataSource(ITubeModel data) {
+		plotContainer.setDataSource(data);
 	}
 }

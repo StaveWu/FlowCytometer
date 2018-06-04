@@ -20,7 +20,7 @@ import utils.SwingUtils;
 @SuppressWarnings("serial")
 public class ArrowPaneContainer extends JPanel implements ArrowPaneObserver {
 	
-	private List<ArrowPane> panes = new ArrayList<>();
+	protected List<ArrowPane> panes = new ArrayList<>();
 	
 	public ArrowPaneContainer() {
 		setLayout(null);
@@ -54,6 +54,12 @@ public class ArrowPaneContainer extends JPanel implements ArrowPaneObserver {
 		}
 		super.remove(comp);
 		focusLastPane();
+	}
+	
+	@Override
+	public void removeAll() {
+		panes.clear();
+		super.removeAll();
 	}
 	
 	@Override

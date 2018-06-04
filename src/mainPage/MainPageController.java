@@ -31,9 +31,7 @@ import tube.TubeController;
 import tube.TubeModel;
 import utils.SwingUtils;
 import worksheet.WorkSheetController;
-import worksheet.WorkSheetModel;
 import worksheet.interfaces.IWorkSheetController;
-import worksheet.interfaces.IWorkSheetModel;
 
 public class MainPageController implements DirTreeObserver, DashBoardObserver, 
 	WorkSheetObserver, ParamSettingsObserver, SerialPortEventListener {
@@ -93,8 +91,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 	}
 	
 	private JPanel loadWorkSheet() {
-		IWorkSheetModel workSheetModel = new WorkSheetModel();
-		workSheetController = new WorkSheetController(workSheetModel);
+		workSheetController = new WorkSheetController();
 		workSheetController.addObserver(this);
 		return workSheetController.getView();
 	}

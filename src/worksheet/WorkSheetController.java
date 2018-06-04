@@ -15,28 +15,24 @@ import plot.Plot;
 import tube.ITubeModel;
 import utils.SwingUtils;
 import worksheet.interfaces.IWorkSheetController;
-import worksheet.interfaces.IWorkSheetModel;
 
 public class WorkSheetController implements IWorkSheetController {
 	
-	private IWorkSheetModel workSheetModel;
 	private WorkSheetView view;
 	
 	private List<WorkSheetObserver> observers = new ArrayList<>();
 	
-	public WorkSheetController(IWorkSheetModel model) {
-		this.workSheetModel = model;
-		view = new WorkSheetView(model, this);
+	public WorkSheetController() {
+		view = new WorkSheetView(this);
 		view.initializeComponents();
-//		view.disableEdit();
+		view.disableEdit();
 	}
 
 	@Override
 	public void loadWorkSheet(String pathname) {
 		try {
-			workSheetModel.init(pathname);
-			view.repaint();
-//			view.enableEdit();
+			view.loadPlots(pathname);
+			view.enableEdit();
 		} catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "加载WorkSheet失败！异常信息：" + e.getMessage());
@@ -47,7 +43,7 @@ public class WorkSheetController implements IWorkSheetController {
 	
 	@Override
 	public void addDataSource(ITubeModel data) {
-		workSheetModel.addDataSource(data);
+		view.addDataSource(data);
 	}
 	
 	
@@ -82,7 +78,7 @@ public class WorkSheetController implements IWorkSheetController {
 	@Override
 	public void save(Point location) {
 		try {
-			workSheetModel.save();
+			view.save();
 		} catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "保存失败！异常信息：" + e.getMessage());
@@ -93,7 +89,7 @@ public class WorkSheetController implements IWorkSheetController {
 	public void createDotPlot(Point location) {
 		Plot dotPlot = new DotPlot();
 		dotPlot.setLocation(location);
-		workSheetModel.addPlot(dotPlot);
+		view.addPlot(dotPlot);
 		view.repaint();
 	}
 
@@ -101,7 +97,7 @@ public class WorkSheetController implements IWorkSheetController {
 	public void createHistogram(Point location) {
 		Plot histogram = new Histogram();
 		histogram.setLocation(location);
-		workSheetModel.addPlot(histogram);
+		view.addPlot(histogram);
 		view.repaint();
 	}
 
@@ -109,7 +105,7 @@ public class WorkSheetController implements IWorkSheetController {
 	public void createDensityPlot(Point location) {
 		Plot densityPlot = new DensityPlot();
 		densityPlot.setLocation(location);
-		workSheetModel.addPlot(densityPlot);
+		view.addPlot(densityPlot);
 		view.repaint();
 	}
 }
