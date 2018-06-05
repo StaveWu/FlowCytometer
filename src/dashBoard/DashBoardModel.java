@@ -19,8 +19,10 @@ public class DashBoardModel {
 	 */
 	public void startSampling() throws Exception {
 		confirmCurrentSelectedDevice();
-		String message = "开始采样";
-		device.write(message.getBytes());
+		String message = "LED1:\r\n";
+		String m2 = "data1:\r\n";
+		String m3 = "data2:\r\n";
+		device.write(m3.getBytes());
 	}
 	
 	/**

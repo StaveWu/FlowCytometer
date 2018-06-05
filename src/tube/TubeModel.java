@@ -13,6 +13,8 @@ import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import device.SerialTool;
+import gnu.io.SerialPortEvent;
 import utils.StringUtils;
 
 
@@ -223,6 +225,19 @@ public class TubeModel implements ITubeModel {
 	@Override
 	public TableModel getDelegate() {
 		return delegate;
+	}
+
+	@Override
+	public void serialEvent(SerialPortEvent e) {
+		if (e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+			try {
+				System.out.println(new String(SerialTool.getInstance().read()));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				throw new RuntimeException("¶ÁÈ¡´®¿ÚÊ§°Ü£¡");
+			}
+		}
+		
 	}
 
 

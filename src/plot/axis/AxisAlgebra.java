@@ -25,7 +25,7 @@ public class AxisAlgebra {
 			String maxStr = "" + (int)maxValue;
 			//如果位数相等，可以判断中间不存在其他刻度
 			if(minStr.length() == maxStr.length()) {
-				//添加结果
+				//duplicate
 			}
 			//如果位数不等
 			else {

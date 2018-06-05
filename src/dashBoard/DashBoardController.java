@@ -38,6 +38,7 @@ public class DashBoardController {
 		try {
 			model.stopSampling();
 			view.setStatusStop();
+			notifyDashBoardObservers(new DashBoardEvent(this, DashBoardEvent.STOP_SAMPLING));
 		} catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "·¢ËÍÊý¾ÝÊ§°Ü£¡" + e.toString());

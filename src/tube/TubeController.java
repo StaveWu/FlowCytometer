@@ -48,7 +48,7 @@ public class TubeController implements ITubeController {
 	}
 
 	@Override
-	public ITubeModel getData() {
+	public ITubeModel geTubeModel() {
 		return model;
 	}
 

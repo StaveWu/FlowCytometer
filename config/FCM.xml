@@ -3,8 +3,8 @@
 	<bootChooserBox>1</bootChooserBox>
 	<device>
 		<serialPort>
-			<portname>COM1</portname>
-			<baudrate>9600</baudrate>
+			<portname>COM3</portname>
+			<baudrate>115200</baudrate>
 		</serialPort>
 		<usb/>
 		<selected>SerialPort</selected>

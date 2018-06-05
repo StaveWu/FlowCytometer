@@ -60,13 +60,6 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 		
 		view.createGUI();
 		
-		// 添加串口监听
-		try {
-			SerialTool.getInstance().addEventListener(this);
-		} catch (TooManyListenersException e) {
-			e.printStackTrace();
-			SwingUtils.showErrorDialog(view, "添加串口监听失败！请检查串口是否被占用");
-		}
 	}
 	
 	private JPanel loadDirTree() throws Exception {
@@ -107,7 +100,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 		if (ev.getSource() == dirTreeController) {
 			String pathname = FCMSettings.getWorkSpacePath() + ev.getRelaPath();
 			if (ev.getActionCommand() == DirTreeEvent.OPEN_SETTINGS) {
-				// 初始化参数设置
+				// 初始化参数列表
 				paramController.loadSettings(pathname);
 			}
 			else if (ev.getActionCommand() == DirTreeEvent.OPEN_WORKSHEET) {
@@ -121,7 +114,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 			else if (ev.getActionCommand() == DirTreeEvent.OPEN_TUBE) {
 				// 初始化试管数据
 				tubeController.loadData(pathname);
-				workSheetController.addDataSource(tubeController.getData());
+				workSheetController.addDataSource(tubeController.geTubeModel());
 			}
 		}
 	}
@@ -142,10 +135,19 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 	public void dashBoardUpdated(DashBoardEvent ev) {
 		if (ev.getSource() == dashBoardController) {
 			if (ev.getActionCommand() == DashBoardEvent.START_SAMPLING) {
-				// 设置settings面板不可编辑
 				paramController.disableTableEdit();
-			} else if (ev.getActionCommand() == DashBoardEvent.STOP_SAMPLING) {
-				
+				// 添加监听
+				try {
+					SerialTool.getInstance().addEventListener(tubeController.geTubeModel());
+				} catch (TooManyListenersException e) {
+					e.printStackTrace();
+					SwingUtils.showErrorDialog(view, e.toString());
+				}
+			} 
+			else if (ev.getActionCommand() == DashBoardEvent.STOP_SAMPLING) {
+				paramController.enableTableEdit();
+				// 停止监听
+				SerialTool.getInstance().removeEventListener();
 			}
 		}
 	}

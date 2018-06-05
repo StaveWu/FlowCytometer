@@ -14,6 +14,6 @@ public interface ITubeController {
 	
 	JPanel getView();
 	
-	ITubeModel getData();
+	ITubeModel geTubeModel();
 
 }
