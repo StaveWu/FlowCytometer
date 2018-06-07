@@ -19,6 +19,7 @@ import mainPage.interfaces.ParamSettingsObserver;
 import mainPage.interfaces.WorkSheetObserver;
 import paramSettings.ParamController;
 import paramSettings.ParamModel;
+import paramSettings.SpectrumAnalysis;
 import paramSettings.interfaces.IParamController;
 import paramSettings.interfaces.ITableModel;
 import projectTree.IProjectTreeController;
@@ -44,6 +45,8 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 	private IWorkSheetController workSheetController;
 	private ITubeController tubeController;
 	
+	private SpectrumAnalysis spectrumAnalysis;
+	
 	public MainPageController() {
 		view = new MainPageView(this);
 		// 加载各个子控件
@@ -60,6 +63,10 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 		
 		view.createGUI();
 		
+		spectrumAnalysis = new SpectrumAnalysis();
+		Thread t = new Thread(spectrumAnalysis);
+		t.setDaemon(true);
+		t.start();
 	}
 	
 	private JPanel loadDirTree() throws Exception {
@@ -105,11 +112,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 			}
 			else if (ev.getActionCommand() == DirTreeEvent.OPEN_WORKSHEET) {
 				// 初始化worksheet
-				try {
-					workSheetController.loadWorkSheet(pathname);
-				} catch (Exception e) {
-					SwingUtils.showErrorDialog(view, "初始化WorkSheet失败！\r\n异常信息：\r\n" + e.getMessage());
-				}
+				workSheetController.loadWorkSheet(pathname);
 			} 
 			else if (ev.getActionCommand() == DirTreeEvent.OPEN_TUBE) {
 				// 初始化试管数据

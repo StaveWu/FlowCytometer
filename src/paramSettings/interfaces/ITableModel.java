@@ -18,10 +18,6 @@ public interface ITableModel {
 	
 	int getColumnCount();
 	
-	/**
-	 * 不会有引用
-	 * @return
-	 */
 	Vector<String> getDataNames();
 	
 	TableModel getDelegate();

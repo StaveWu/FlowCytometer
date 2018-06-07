@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import dao.beans.DirTreeBean;
-import projectTree.IProjectTreeController;
 
+@SuppressWarnings("serial")
 public class ProjectTreeMenu extends PopupMenuX {
 
 	public static final String EXPERIMENT_SOLUTION = "实验方案";
@@ -15,10 +15,10 @@ public class ProjectTreeMenu extends PopupMenuX {
 	public static final String DELETE = "删除";
 	public static final String RENAME = "重命名";
 	
-	private IProjectTreeController controller;
+	private IProjectTreeCommand treeCommand;
 
-	public ProjectTreeMenu(IProjectTreeController controller) {
-		this.controller = controller;
+	public ProjectTreeMenu(IProjectTreeCommand command) {
+		this.treeCommand = command;
 	}
 
 	@Override
@@ -30,8 +30,8 @@ public class ProjectTreeMenu extends PopupMenuX {
 	public void invoke(String command) {
 		//反射调用控制器方法
 		try {
-			Method fun = IProjectTreeController.class.getDeclaredMethod(command, DefaultMutableTreeNode.class);
-			fun.invoke(controller, (DefaultMutableTreeNode) source);
+			Method fun = IProjectTreeCommand.class.getDeclaredMethod(command, DefaultMutableTreeNode.class);
+			fun.invoke(treeCommand, (DefaultMutableTreeNode) source);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

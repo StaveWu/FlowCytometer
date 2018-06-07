@@ -4,12 +4,13 @@ import java.lang.reflect.Method;
 
 import mainPage.MainPageController;
 
+@SuppressWarnings("serial")
 public class MainPageMenuBar extends MenuBarX {
 	
-	private MainPageController controller;
+	private IMainMenuBarCommand mainMenuBarCommand;
 	
-	public MainPageMenuBar(MainPageController controller) {
-		this.controller = controller;
+	public MainPageMenuBar(IMainMenuBarCommand command) {
+		this.mainMenuBarCommand = command;
 	}
 
 	@Override
@@ -20,8 +21,8 @@ public class MainPageMenuBar extends MenuBarX {
 	@Override
 	public void invoke(String command) {
 		try {
-			Method fun = MainPageController.class.getMethod(command);
-			fun.invoke(controller);
+			Method fun = IMainMenuBarCommand.class.getMethod(command);
+			fun.invoke(mainMenuBarCommand);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

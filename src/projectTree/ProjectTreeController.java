@@ -109,34 +109,34 @@ public class ProjectTreeController implements IProjectTreeController {
 		view.startEditing(node);
 	}
 
-	@Override
-	public JPanel getView() {
-		return view;
-	}
+//	@Override
+//	public JPanel getView() {
+//		return view;
+//	}
 
-	@Override
-	public void openNode(DefaultMutableTreeNode node) {
-		DirTreeBean nodeInfo = (DirTreeBean) node.getUserObject();
-		switch (nodeInfo.getNodeType()) {
-		// 打开顺序很重要
-		case SETTINGS:
-			openSettings(node);
-			break;
-		case WORKSHEET:
-			openWorkSheet(node);
-			openSettings(getParamSettingsNode(node));
-			break;
-		case TUBE:
-			openTube(node);
-			openWorkSheet(getWorkSheetNode(node));
-			openSettings(getParamSettingsNode(node));
-			break;
-
-		default:
-			// duplicate
-			break;
-		}
-	}
+//	@Override
+//	public void openNode(DefaultMutableTreeNode node) {
+//		DirTreeBean nodeInfo = (DirTreeBean) node.getUserObject();
+//		switch (nodeInfo.getNodeType()) {
+//		// 打开顺序很重要
+//		case SETTINGS:
+//			openSettings(node);
+//			break;
+//		case WORKSHEET:
+//			openWorkSheet(node);
+//			openSettings(getParamSettingsNode(node));
+//			break;
+//		case TUBE:
+//			openTube(node);
+//			openWorkSheet(getWorkSheetNode(node));
+//			openSettings(getParamSettingsNode(node));
+//			break;
+//
+//		default:
+//			// duplicate
+//			break;
+//		}
+//	}
 	
 	private DefaultMutableTreeNode getParamSettingsNode(DefaultMutableTreeNode node) {
 		// 获取该节点附近的paramSettings
@@ -187,43 +187,43 @@ public class ProjectTreeController implements IProjectTreeController {
 		}
 	}
 	
-	private void openSettings(DefaultMutableTreeNode node) {
-		notifyObservers(new DirTreeEvent(
-				this, 
-				DirTreeEvent.OPEN_SETTINGS, 
-				ProjectTreeUtils.getRelaPath(node)));
-//		System.out.println(ProjectTreeUtils.getRelaPath(node));
-	}
+//	private void openSettings(DefaultMutableTreeNode node) {
+//		notifyObservers(new DirTreeEvent(
+//				this, 
+//				DirTreeEvent.OPEN_SETTINGS, 
+//				ProjectTreeUtils.getRelaPath(node)));
+////		System.out.println(ProjectTreeUtils.getRelaPath(node));
+//	}
+//
+//	private void openWorkSheet(DefaultMutableTreeNode node) {
+//		notifyObservers(new DirTreeEvent(
+//				this, 
+//				DirTreeEvent.OPEN_WORKSHEET, 
+//				ProjectTreeUtils.getRelaPath(node)));
+////		System.out.println(ProjectTreeUtils.getRelaPath(node));
+//	}
+//
+//	private void openTube(DefaultMutableTreeNode node) {
+//		notifyObservers(new DirTreeEvent(
+//				this, 
+//				DirTreeEvent.OPEN_TUBE, 
+//				ProjectTreeUtils.getRelaPath(node)));
+////		System.out.println(ProjectTreeUtils.getRelaPath(node));
+//	}
 
-	private void openWorkSheet(DefaultMutableTreeNode node) {
-		notifyObservers(new DirTreeEvent(
-				this, 
-				DirTreeEvent.OPEN_WORKSHEET, 
-				ProjectTreeUtils.getRelaPath(node)));
-//		System.out.println(ProjectTreeUtils.getRelaPath(node));
-	}
-
-	private void openTube(DefaultMutableTreeNode node) {
-		notifyObservers(new DirTreeEvent(
-				this, 
-				DirTreeEvent.OPEN_TUBE, 
-				ProjectTreeUtils.getRelaPath(node)));
-//		System.out.println(ProjectTreeUtils.getRelaPath(node));
-	}
-
-	@Override
-	public void addObserver(DirTreeObserver observer) {
-		observers.add(observer);
-	}
-
-	@Override
-	public void removeObserver(DirTreeObserver observer) {
-		observers.remove(observer);
-	}
-
-	@Override
-	public void notifyObservers(DirTreeEvent event) {
-		observers.stream().forEach(o -> o.dirTreeUpdated(event));
-	}
+//	@Override
+//	public void addObserver(DirTreeObserver observer) {
+//		observers.add(observer);
+//	}
+//
+//	@Override
+//	public void removeObserver(DirTreeObserver observer) {
+//		observers.remove(observer);
+//	}
+//
+//	@Override
+//	public void notifyObservers(DirTreeEvent event) {
+//		observers.stream().forEach(o -> o.dirTreeUpdated(event));
+//	}
 
 }

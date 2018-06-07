@@ -1,6 +1,8 @@
-package conn;
+package device;
 
-public class DataParser {
+import java.util.Map;
+
+public class CommDataParser {
 	
 	public static final IDataParseStrategy PLAIN = new DataParseByPlainStrategy();
 	
@@ -13,7 +15,7 @@ public class DataParser {
 		}
 
 		@Override
-		public double[] decode(byte[] data) {
+		public Map<String, Double> decode(byte[] data) {
 			// TODO Auto-generated method stub
 			return null;
 		}

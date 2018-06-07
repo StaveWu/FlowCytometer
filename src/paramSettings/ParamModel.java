@@ -3,6 +3,7 @@ package paramSettings;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
@@ -13,7 +14,7 @@ import dao.beans.ParamSettingsBean;
 import paramSettings.interfaces.ITableModel;
 import paramSettings.interfaces.ParamModelObserver;
 
-public class ParamModel implements ITableModel {
+public class ParamModel implements ITableModel, IIntensityObserver {
 	
 	private DefaultTableModel delegate;
 	
@@ -50,6 +51,7 @@ public class ParamModel implements ITableModel {
 		delegate.addColumn("A");
 		delegate.addColumn("H");
 		delegate.addColumn("W");
+		
 	}
 	
 	@Override
@@ -172,6 +174,7 @@ public class ParamModel implements ITableModel {
 		gcs.add(new GroupCondition(delegate.getColumnName(column), "=", newValue));
 		List<Integer> ids = DAOFactory.getIParamSettingsDAOInstance(pathname).findId(settingsTableName);
 		DAOFactory.getIParamSettingsDAOInstance(pathname).update(settingsTableName, gcs, ids.get(row));
+		
 	}
 
 	@Override
@@ -197,5 +200,10 @@ public class ParamModel implements ITableModel {
 	@Override
 	public void notifyObservers() {
 		observers.stream().forEach(e -> e.updated());
+	}
+
+	@Override
+	public void intensitiesMayChanged(Map<String, double[]> intensities) {
+		
 	}
 }

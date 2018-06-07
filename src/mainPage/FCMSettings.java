@@ -72,13 +72,7 @@ public class FCMSettings {
 	}
 	
 	public static void setWorkSpacePath(String path) {
-		NodeList nodeList = DOC.getElementsByTagName("workspace");
-		if (nodeList.getLength() <= 0) {
-			return;
-		}
-		Node node = nodeList.item(0);
-		node.setTextContent(path);
-		save();
+		setContent("workspace", path);
 	}
 	
 	public static void save() {
@@ -95,37 +89,23 @@ public class FCMSettings {
 	}
 	
 	public static String getSerialPortName() {
-		NodeList nodeList = DOC.getElementsByTagName("portname");
-		if (nodeList.getLength() <= 0) {
-			return null;
-		}
-		return nodeList.item(0).getTextContent();
+		return getContent("portname");
 	}
 	
 	public static int getBaudRate() {
-		NodeList nodeList = DOC.getElementsByTagName("baudrate");
-		if (nodeList.getLength() <= 0) {
+		String res = getContent("baudrate");
+		if (res == null) {
 			return -1;
 		}
-		return Integer.valueOf(nodeList.item(0).getTextContent());
+		return Integer.valueOf(res);
 	}
 	
 	public static void setSerialPortName(String name) {
-		NodeList nodeList = DOC.getElementsByTagName("portname");
-		if (nodeList.getLength() <= 0) {
-			return;
-		}
-		nodeList.item(0).setTextContent(name);
-		save();
+		setContent("portname", name);
 	}
 	
 	public static void setBaudRate(int b) {
-		NodeList nodeList = DOC.getElementsByTagName("baudrate");
-		if (nodeList.getLength() <= 0) {
-			return;
-		}
-		nodeList.item(0).setTextContent("" + b);
-		save();
+		setContent("baudrate", b);
 	}
 	
 	public static CommDeviceType getCommDeviceType() {
@@ -143,12 +123,39 @@ public class FCMSettings {
 	}
 	
 	public static void setCommDeviceType(CommDeviceType type) {
-		NodeList nodeList = DOC.getElementsByTagName("selected");
+		setContent("selected", type);
+	}
+	
+	public static void setSelectedProject(String projectname) {
+		setContent("selectedProject", projectname);
+	}
+	
+	public static String getSelectedProject() {
+		return getContent("selectedProject");
+	}
+	
+	public static String getProjectSettingsPath() {
+		return getWorkSpacePath() + "/" + getSelectedProject() + "/" + "Settings";
+	}
+	
+	public static String getProjectWorkSheetPath() {
+		return getWorkSpacePath() + "/" + getSelectedProject() + "/" + "WorkSheet";
+	}
+	
+	private static String getContent(String tag) {
+		NodeList nodeList = DOC.getElementsByTagName(tag);
+		if (nodeList.getLength() <= 0) {
+			return null;
+		}
+		return nodeList.item(0).getTextContent();
+	}
+	
+	private static void setContent(String tag, Object value) {
+		NodeList nodeList = DOC.getElementsByTagName(tag);
 		if (nodeList.getLength() <= 0) {
 			return;
 		}
-		nodeList.item(0).setTextContent(type.toString());
+		nodeList.item(0).setTextContent(value.toString());
 		save();
 	}
-	
 }
