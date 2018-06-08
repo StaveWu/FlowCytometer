@@ -1,16 +1,12 @@
 package projectTree;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
-import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
 import dao.beans.DirTreeBean;
-import mainPage.events.DirTreeEvent;
-import mainPage.interfaces.DirTreeObserver;
+import mainPage.MainView;
 import utils.SwingUtils;
 
 public class ProjectTreeController implements IProjectTreeController {
@@ -19,18 +15,19 @@ public class ProjectTreeController implements IProjectTreeController {
 	private static final String DefaultName_Worksheet = "WorkSheet";
 	
 	private IProjectTreeModel model;
-	private ProjectTreeView view;
-	private List<DirTreeObserver> observers = new ArrayList<>();
+	private MainView view;
 	
-	public ProjectTreeController(IProjectTreeModel model) {
+	public ProjectTreeController(IProjectTreeModel model, MainView view) {
 		this.model = model;
-		view = new ProjectTreeView(model, this);
-		view.initializeComponent();
+		this.view = view;
 	}
 
 	@Override
 	public void createExperimentSolution(DefaultMutableTreeNode parent) {
 		final String name = SwingUtils.showInputDialog(view, "请输入实验名称：");
+		if (name == null || name.equals("")) {
+			return;
+		}
 		
 		DirTreeBean nodeInfo = new DirTreeBean(ProjectTreeUtils.getNextLid(parent),
 				name, NodeType.EXPERIMENT_SOLUTION, FileType.FOLDER);
@@ -60,6 +57,9 @@ public class ProjectTreeController implements IProjectTreeController {
 	@Override
 	public void createSpecimen(DefaultMutableTreeNode parent) {
 		final String name = SwingUtils.showInputDialog(view, "请输入样品名称：");
+		if (name == null || name.equals("")) {
+			return;
+		}
 		// 创建样品文件夹
 		DirTreeBean nodeInfo = new DirTreeBean(ProjectTreeUtils.getNextLid(parent), 
 				name, NodeType.SPECIMEN, FileType.FOLDER);
@@ -78,6 +78,9 @@ public class ProjectTreeController implements IProjectTreeController {
 	@Override
 	public void createTube(DefaultMutableTreeNode parent) {
 		final String name = SwingUtils.showInputDialog(view, "请输入试管名称：");
+		if (name == null || name.equals("")) {
+			return;
+		}
 		// 创建试管文件
 		DirTreeBean nodeInfo = new DirTreeBean(ProjectTreeUtils.getNextLid(parent),
 				name, NodeType.TUBE, FileType.FILE);
@@ -109,10 +112,6 @@ public class ProjectTreeController implements IProjectTreeController {
 		view.startEditing(node);
 	}
 
-//	@Override
-//	public JPanel getView() {
-//		return view;
-//	}
 
 //	@Override
 //	public void openNode(DefaultMutableTreeNode node) {
@@ -186,44 +185,5 @@ public class ProjectTreeController implements IProjectTreeController {
 			return searchExperimentNode(parent);
 		}
 	}
-	
-//	private void openSettings(DefaultMutableTreeNode node) {
-//		notifyObservers(new DirTreeEvent(
-//				this, 
-//				DirTreeEvent.OPEN_SETTINGS, 
-//				ProjectTreeUtils.getRelaPath(node)));
-////		System.out.println(ProjectTreeUtils.getRelaPath(node));
-//	}
-//
-//	private void openWorkSheet(DefaultMutableTreeNode node) {
-//		notifyObservers(new DirTreeEvent(
-//				this, 
-//				DirTreeEvent.OPEN_WORKSHEET, 
-//				ProjectTreeUtils.getRelaPath(node)));
-////		System.out.println(ProjectTreeUtils.getRelaPath(node));
-//	}
-//
-//	private void openTube(DefaultMutableTreeNode node) {
-//		notifyObservers(new DirTreeEvent(
-//				this, 
-//				DirTreeEvent.OPEN_TUBE, 
-//				ProjectTreeUtils.getRelaPath(node)));
-////		System.out.println(ProjectTreeUtils.getRelaPath(node));
-//	}
-
-//	@Override
-//	public void addObserver(DirTreeObserver observer) {
-//		observers.add(observer);
-//	}
-//
-//	@Override
-//	public void removeObserver(DirTreeObserver observer) {
-//		observers.remove(observer);
-//	}
-//
-//	@Override
-//	public void notifyObservers(DirTreeEvent event) {
-//		observers.stream().forEach(o -> o.dirTreeUpdated(event));
-//	}
 
 }

@@ -15,9 +15,7 @@ import tube.TubeModel;
 @SuppressWarnings("serial")
 public class PlotContainer extends ArrowPaneContainer {
 	
-	private PLotContainerObserver observer;
-	
-	private String pathname;
+	private PlotContainerObserver observer;
 	
 	private static final String worksheetTableName = "WorkSheet";
 	
@@ -26,7 +24,6 @@ public class PlotContainer extends ArrowPaneContainer {
 	public PlotContainer() {}
 	
 	public void loadPlots(String pathname) throws Exception {
-		this.pathname = pathname;
 		clear();
 		if (!DAOFactory.getIPlotsDAOInstance(pathname).isExist(worksheetTableName)) {
 			DAOFactory.getIPlotsDAOInstance(pathname).createTable(worksheetTableName);
@@ -46,7 +43,7 @@ public class PlotContainer extends ArrowPaneContainer {
 		}
 	}
 	
-	public void savePlots() throws Exception {
+	public void savePlots(String pathname) throws Exception {
 		DAOFactory.getIPlotsDAOInstance(pathname).addAll(worksheetTableName, getPlots());
 	}
 	
@@ -67,7 +64,7 @@ public class PlotContainer extends ArrowPaneContainer {
 		return null;
 	}
 	
-	private void clear() {
+	public void clear() {
 		removeAll();
 	}
 	
@@ -113,11 +110,11 @@ public class PlotContainer extends ArrowPaneContainer {
 		}
 	}
 	
-	public void addObserver(PLotContainerObserver observer) {
+	public void addObserver(PlotContainerObserver observer) {
 		this.observer = observer;
 	}
 	
-	public void removeObserver(PLotContainerObserver observer) {
+	public void removeObserver(PlotContainerObserver observer) {
 		if (observer != null) {
 			observer = null;
 		}

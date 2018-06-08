@@ -131,4 +131,27 @@ public class ParamSettingsImp implements IParamSettingsDAO {
 		return res;
 	}
 
+	@Override
+	public void updateAll(String tableName, List<ParamSettingsBean> beans) throws SQLException {
+		// 先清空数据库
+		String deleteSql = "delete from " + tableName;
+		pstmt = conn.prepareStatement(deleteSql);
+		pstmt.execute();
+		// 再添加数据
+		String sql = "insert into " + tableName
+				+ "(参数名,电压值,阈值,A,H,W) values(?,?,?,?,?,?)";
+		for (ParamSettingsBean b : beans) {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, b.getParamName());
+			pstmt.setInt(2, b.getVoltage());
+			pstmt.setInt(3, b.getThreshold());
+			pstmt.setBoolean(4, b.isA());
+			pstmt.setBoolean(5, b.isH());
+			pstmt.setBoolean(6, b.isW());
+			pstmt.executeUpdate();
+		}
+		
+		pstmt.close();
+	}
+
 }

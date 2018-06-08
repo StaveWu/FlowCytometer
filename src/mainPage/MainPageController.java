@@ -21,7 +21,7 @@ import paramSettings.ParamController;
 import paramSettings.ParamModel;
 import paramSettings.SpectrumAnalysis;
 import paramSettings.interfaces.IParamController;
-import paramSettings.interfaces.ITableModel;
+import paramSettings.interfaces.IParamModel;
 import projectTree.IProjectTreeController;
 import projectTree.IProjectTreeModel;
 import projectTree.ProjectTreeController;
@@ -77,7 +77,7 @@ public class MainPageController implements DirTreeObserver, DashBoardObserver,
 	}
 	
 	private JPanel loadParamSettings() {
-		ITableModel paramModel = new ParamModel();
+		IParamModel paramModel = new ParamModel();
 		paramController = new ParamController(paramModel);
 		paramController.addObserver(this);
 		return paramController.getView();

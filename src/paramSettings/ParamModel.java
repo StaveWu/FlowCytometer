@@ -3,23 +3,20 @@ package paramSettings;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
 import dao.DAOFactory;
-import dao.GroupCondition;
 import dao.beans.ParamSettingsBean;
-import paramSettings.interfaces.ITableModel;
+import paramSettings.interfaces.IParamModel;
 import paramSettings.interfaces.ParamModelObserver;
 
-public class ParamModel implements ITableModel, IIntensityObserver {
+public class ParamModel implements IParamModel {
 	
 	private DefaultTableModel delegate;
 	
 	private static final String settingsTableName = "ParamSettings";
-	private String pathname;
 	
 	private List<ParamModelObserver> observers = new ArrayList<>();
 	
@@ -37,7 +34,6 @@ public class ParamModel implements ITableModel, IIntensityObserver {
 					return;
 				}
 				try {
-					updateTable(newValue, row, column);
 					super.setValueAt(newValue, row, column);
 					notifyObservers();
 				} catch (Exception e) {
@@ -58,7 +54,6 @@ public class ParamModel implements ITableModel, IIntensityObserver {
 	public void init(String pathname) throws Exception {
 		clear();
 		// 从数据库中读取指定表，如果不存在，则创建表
-		this.pathname = pathname;
 		if (!DAOFactory.getIParamSettingsDAOInstance(pathname).isExist(settingsTableName)) {
 			DAOFactory.getIParamSettingsDAOInstance(pathname).createTable(settingsTableName);
 		}
@@ -75,11 +70,12 @@ public class ParamModel implements ITableModel, IIntensityObserver {
 					bean.isH(),
 					bean.isW()
 					};
-			delegate.addRow(rowdata);
+			addRow(rowdata);
 		}
 	}
 	
-	private void clear() {
+	@Override
+	public void clear() {
 		int rows = delegate.getRowCount();
 		for (int i = rows - 1; i >= 0; i--) {
 			delegate.removeRow(i);
@@ -88,33 +84,15 @@ public class ParamModel implements ITableModel, IIntensityObserver {
 	
 	@Override
 	public void addRow(Object[] rowData) throws Exception {
-		// 数据库添加
-		ParamSettingsBean psBean = new ParamSettingsBean();
-		
-		psBean.setParamName((String) rowData[0]);
-		psBean.setVoltage((int) rowData[1]);
-		psBean.setThreshold((int) rowData[2]);
-		psBean.setA((boolean) rowData[3]);
-		psBean.setH((boolean) rowData[4]);
-		psBean.setW((boolean) rowData[5]);
-		
-		boolean isAdded = DAOFactory.getIParamSettingsDAOInstance(pathname).
-				addParamSetting(settingsTableName, psBean);
-		// 委托对象添加行
-		if (isAdded) {
-			delegate.addRow(rowData);
-		}
-		
+		delegate.addRow(rowData);
+		notifyObservers();
 	}
 	
 	
 	@Override
 	public void removeRow(int row) throws Exception {
-		// 数据库删除指定行
-		List<Integer> ids = DAOFactory.getIParamSettingsDAOInstance(pathname).findId(settingsTableName);
-		DAOFactory.getIParamSettingsDAOInstance(pathname).deleteParamSetting(settingsTableName, ids.get(row));
-		// 委托对象删除指定行
 		delegate.removeRow(row);
+		notifyObservers();
 	}
 	
 	@Override
@@ -166,16 +144,6 @@ public class ParamModel implements ITableModel, IIntensityObserver {
 	public void setValueAt(Object value, int row, int column) {
 		delegate.setValueAt(value, row, column);
 	}
-	
-	private void updateTable(Object value, int row, int column) throws Exception {
-		// 更新数据库
-		String newValue = String.valueOf(value);
-		List<GroupCondition> gcs = new ArrayList<>();
-		gcs.add(new GroupCondition(delegate.getColumnName(column), "=", newValue));
-		List<Integer> ids = DAOFactory.getIParamSettingsDAOInstance(pathname).findId(settingsTableName);
-		DAOFactory.getIParamSettingsDAOInstance(pathname).update(settingsTableName, gcs, ids.get(row));
-		
-	}
 
 	@Override
 	public int getRowCount() {
@@ -203,7 +171,26 @@ public class ParamModel implements ITableModel, IIntensityObserver {
 	}
 
 	@Override
-	public void intensitiesMayChanged(Map<String, double[]> intensities) {
+	public void save(String pathname) throws Exception {
 		
+		List<ParamSettingsBean> beans = new ArrayList<>();
+		for (int i = 0; i < delegate.getRowCount(); i++) {
+			
+			@SuppressWarnings("rawtypes")
+			Vector v = (Vector) delegate.getDataVector().elementAt(i);
+			ParamSettingsBean psBean = new ParamSettingsBean();
+			
+			psBean.setParamName((String) v.get(0));
+			psBean.setVoltage((int) v.get(1));
+			psBean.setThreshold((int) v.get(2));
+			psBean.setA((boolean) v.get(3));
+			psBean.setH((boolean) v.get(4));
+			psBean.setW((boolean) v.get(5));
+			
+			beans.add(psBean);
+			
+		}
+		
+		DAOFactory.getIParamSettingsDAOInstance(pathname).updateAll(settingsTableName, beans);
 	}
 }

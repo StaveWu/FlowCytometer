@@ -2,33 +2,42 @@ package tube;
 
 import java.util.Vector;
 
-import javax.swing.JPanel;
-
+import mainPage.MainView;
+import mainPage.Session;
 import utils.SwingUtils;
 
 public class TubeController implements ITubeController {
 	
 	private ITubeModel model;
-	private TubeView view;
+	private MainView view;
 	
-	public TubeController(ITubeModel model) {
+	// 当前所属的tubeid
+	private String tubeLid;
+	
+	public TubeController(ITubeModel model, MainView view) {
 		this.model = model;
-		view = new TubeView(this, model);
-		view.initComponents();
+		this.view = view;
 	}
 
 	@Override
 	public void loadData(String pathname) {
-		try {
-			model.init(pathname);
-		} catch (Exception e) {
-			e.printStackTrace();
-			SwingUtils.showErrorDialog(view, "加载数据失败！" + e.toString());
+		if (!isTubeOpenned() || isTubeSwitched()) {
+			try {
+				model.init(pathname);
+			} catch (Exception e) {
+				e.printStackTrace();
+				SwingUtils.showErrorDialog(view, "加载数据失败！" + e.toString());
+			}
 		}
+		
 	}
 
 	@Override
 	public void save() {
+		if (!isTubeOpenned()) {
+			SwingUtils.showErrorDialog(view, "无数据可保存");
+			return;
+		}
 		try {
 			model.save();
 		} catch (Exception e) {
@@ -36,20 +45,25 @@ public class TubeController implements ITubeController {
 			SwingUtils.showErrorDialog(view, "保存数据失败！" + e.toString());
 		}
 	}
+	
+	@Override
+	public void clear() {
+		tubeLid = null;
+		model.clear();
+		view.repaint();
+	}
+	
+	private boolean isTubeOpenned() {
+		return tubeLid != null;
+	}
+	
+	private boolean isTubeSwitched() {
+		return tubeLid != null && !tubeLid.equals(Session.getSelectedTubeLid());
+	}
 
 	@Override
 	public void setFields(Vector<String> fields) {
 		model.setFields(fields);
-	}
-
-	@Override
-	public JPanel getView() {
-		return view;
-	}
-
-	@Override
-	public ITubeModel geTubeModel() {
-		return model;
 	}
 
 }

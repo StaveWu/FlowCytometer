@@ -16,6 +16,7 @@ import dao.DAOFactory;
 import dao.GroupCondition;
 import dao.beans.MenuBean;
 
+@SuppressWarnings("serial")
 public abstract class PopupMenuX extends JPopupMenu {
 	
 	/**

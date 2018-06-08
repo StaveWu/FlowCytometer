@@ -1,6 +1,6 @@
 package plotContainer;
 
-public interface PLotContainerObserver {
+public interface PlotContainerObserver {
 	
 	public void notifyDataInputed();
 

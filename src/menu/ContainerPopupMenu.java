@@ -3,15 +3,14 @@ package menu;
 import java.awt.Point;
 import java.lang.reflect.Method;
 
-import worksheet.interfaces.IWorkSheetController;
-
+@SuppressWarnings("serial")
 public class ContainerPopupMenu extends PopupMenuX {
 	
-	private IWorkSheetController controller;
+	private IContainerPopupMenuCommand containerPopupMenuCommand;
 	private Point location;
 
-	public ContainerPopupMenu(IWorkSheetController controller, Point location) {
-		this.controller = controller;
+	public ContainerPopupMenu(IContainerPopupMenuCommand controller, Point location) {
+		this.containerPopupMenuCommand = controller;
 		this.location = location;
 	}
 
@@ -23,8 +22,8 @@ public class ContainerPopupMenu extends PopupMenuX {
 	@Override
 	public void invoke(String command) {
 		try {
-			Method fun = IWorkSheetController.class.getMethod(command, Point.class);
-			fun.invoke(controller, location);
+			Method fun = IContainerPopupMenuCommand.class.getMethod(command, Point.class);
+			fun.invoke(containerPopupMenuCommand, location);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

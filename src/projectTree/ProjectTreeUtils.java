@@ -61,7 +61,7 @@ public class ProjectTreeUtils {
 		// 添加扩展名
 		DirTreeBean info = (DirTreeBean) node.getUserObject();
 		if (info.getNodeType() == NodeType.SETTINGS || info.getNodeType() == NodeType.WORKSHEET) {
-			// 不用添加，因为数据库打开会自动添加后缀
+			relaPath += ".mv.db";
 		}
 		else if (info.getNodeType() == NodeType.TUBE) {
 			relaPath += ".out";
@@ -70,6 +70,36 @@ public class ProjectTreeUtils {
 			// duplicate
 		}
 		return relaPath;
+	}
+	
+	public static String getOwnedProjectLid(DefaultMutableTreeNode node) {
+		DefaultMutableTreeNode projectNode = searchExperimentNode(node);
+		if (projectNode == null) {
+			return null;
+		}
+		return ((DirTreeBean)projectNode.getUserObject()).getLid();
+	}
+	
+	public static String getOwnedProjectName(DefaultMutableTreeNode node) {
+		DefaultMutableTreeNode projectNode = searchExperimentNode(node);
+		if (projectNode == null) {
+			return null;
+		}
+		return ((DirTreeBean)projectNode.getUserObject()).getName();
+	}
+	
+	private static DefaultMutableTreeNode searchExperimentNode(DefaultMutableTreeNode node) {
+		// 递归查询Experiment节点
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+		if (parent == null) {
+			return null;
+		}
+		DirTreeBean nodeInfo = (DirTreeBean) parent.getUserObject();
+		if (nodeInfo.getNodeType() == NodeType.EXPERIMENT_SOLUTION) {
+			return parent;
+		} else {
+			return searchExperimentNode(parent);
+		}
 	}
 
 }

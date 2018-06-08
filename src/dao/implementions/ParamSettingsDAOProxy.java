@@ -68,4 +68,10 @@ public class ParamSettingsDAOProxy implements IParamSettingsDAO {
 		return res;
 	}
 
+	@Override
+	public void updateAll(String tableName, List<ParamSettingsBean> beans) throws SQLException {
+		dao.updateAll(tableName, beans);
+		dbc.close();
+	}
+
 }

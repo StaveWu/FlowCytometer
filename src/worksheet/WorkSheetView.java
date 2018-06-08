@@ -19,14 +19,14 @@ import javax.swing.JToolBar;
 import mainPage.events.WorkSheetEvent;
 import menu.ContainerPopupMenu;
 import plot.Plot;
-import plotContainer.PLotContainerObserver;
 import plotContainer.PlotContainer;
+import plotContainer.PlotContainerObserver;
 import tube.ITubeModel;
 import utils.SwingUtils;
 import worksheet.interfaces.IWorkSheetController;
 
 @SuppressWarnings("serial")
-public class WorkSheetView extends JPanel implements PLotContainerObserver {
+public class WorkSheetView extends JPanel implements PlotContainerObserver {
 	
 	private IWorkSheetController controller;
 	

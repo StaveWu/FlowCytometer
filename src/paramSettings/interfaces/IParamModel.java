@@ -4,9 +4,13 @@ import java.util.Vector;
 
 import javax.swing.table.TableModel;
 
-public interface ITableModel {
+public interface IParamModel {
 	
 	void init(String pathname) throws Exception;
+	
+	void save(String pathname) throws Exception;
+	
+	void clear();
 	
 	void addRow(Object[] rowData) throws Exception;
 	

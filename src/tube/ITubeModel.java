@@ -12,6 +12,8 @@ public interface ITubeModel extends SerialPortEventListener {
 
 	void save() throws Exception;
 	
+	void clear();
+	
 	void addField(String field);
 	
 	void setFields(Vector<String> fields);

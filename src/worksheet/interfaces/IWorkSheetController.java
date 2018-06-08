@@ -1,24 +1,15 @@
 package worksheet.interfaces;
 
-import java.awt.Point;
-
 import javax.swing.JPanel;
 
 import mainPage.events.WorkSheetEvent;
 import mainPage.interfaces.WorkSheetObserver;
+import menu.IContainerPopupMenuCommand;
 import tube.ITubeModel;
 
-public interface IWorkSheetController {
+public interface IWorkSheetController extends IContainerPopupMenuCommand {
 	
 	void loadWorkSheet(String pathname);
-	
-	void save(Point location);
-	
-	void createDotPlot(Point location);
-	
-	void createHistogram(Point location);
-	
-	void createDensityPlot(Point location);
 	
 	void addDataSource(ITubeModel data);
 	

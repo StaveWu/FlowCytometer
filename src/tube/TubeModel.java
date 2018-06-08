@@ -114,7 +114,8 @@ public class TubeModel implements ITubeModel {
 		out.close();
 	}
 	
-	private void clear() {
+	@Override
+	public void clear() {
 		// 清空所有数据
 		Vector<Double> vector = null;
 		delegate.setColumnIdentifiers(vector);

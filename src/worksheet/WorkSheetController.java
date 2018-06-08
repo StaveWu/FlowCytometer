@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
+import mainPage.MainView;
 import mainPage.events.WorkSheetEvent;
 import mainPage.interfaces.WorkSheetObserver;
 import plot.DensityPlot;
@@ -18,13 +19,12 @@ import worksheet.interfaces.IWorkSheetController;
 
 public class WorkSheetController implements IWorkSheetController {
 	
-	private WorkSheetView view;
+	private MainView view;
 	
 	private List<WorkSheetObserver> observers = new ArrayList<>();
 	
-	public WorkSheetController() {
-		view = new WorkSheetView(this);
-		view.initializeComponents();
+	public WorkSheetController(MainView view) {
+		this.view = view;
 		view.disableEdit();
 	}
 

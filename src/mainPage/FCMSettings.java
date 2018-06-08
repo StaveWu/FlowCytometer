@@ -126,20 +126,12 @@ public class FCMSettings {
 		setContent("selected", type);
 	}
 	
-	public static void setSelectedProject(String projectname) {
-		setContent("selectedProject", projectname);
+	public static void setSelectedProjectLid(String projectlid) {
+		setContent("selectedProjectLid", projectlid);
 	}
 	
-	public static String getSelectedProject() {
-		return getContent("selectedProject");
-	}
-	
-	public static String getProjectSettingsPath() {
-		return getWorkSpacePath() + "/" + getSelectedProject() + "/" + "Settings";
-	}
-	
-	public static String getProjectWorkSheetPath() {
-		return getWorkSpacePath() + "/" + getSelectedProject() + "/" + "WorkSheet";
+	public static String getSelectedProjectLid() {
+		return getContent("selectedProjectLid");
 	}
 	
 	private static String getContent(String tag) {

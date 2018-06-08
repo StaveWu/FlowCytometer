@@ -41,6 +41,8 @@ public interface IParamSettingsDAO {
 	 */
 	public boolean deleteParamSetting(String tableName, int id) throws SQLException;
 	
+	public void updateAll(String tableName, List<ParamSettingsBean> beans) throws SQLException;
+	
 	/**
 	 * ≈–∂œ±Ì «∑Ò¥Ê‘⁄
 	 * @param tableName

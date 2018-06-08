@@ -2,8 +2,6 @@ package tube;
 
 import java.util.Vector;
 
-import javax.swing.JPanel;
-
 public interface ITubeController {
 	
 	void loadData(String pathname);
@@ -12,8 +10,6 @@ public interface ITubeController {
 	
 	void setFields(Vector<String> fields);
 	
-	JPanel getView();
-	
-	ITubeModel geTubeModel();
+	void clear();
 
 }

@@ -21,12 +21,12 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import paramSettings.interfaces.IParamController;
-import paramSettings.interfaces.ITableModel;
+import paramSettings.interfaces.IParamModel;
 
 @SuppressWarnings("serial")
 public class ParamView extends JPanel implements ActionListener, MouseListener {
 	
-	private ITableModel model;
+	private IParamModel model;
 	private IParamController controller;
 	
 	//×é¼þ
@@ -36,7 +36,7 @@ public class ParamView extends JPanel implements ActionListener, MouseListener {
 	
 	private boolean isClicked = false;
 	
-	public ParamView(ITableModel model, IParamController controller) {
+	public ParamView(IParamModel model, IParamController controller) {
 		this.controller = controller;
 		this.model = model;
 	}

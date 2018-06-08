@@ -1,41 +1,37 @@
 package paramSettings;
 
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JPanel;
-
 import java.util.Map;
 
-import mainPage.events.ParamSettingsEvent;
-import mainPage.interfaces.ParamSettingsObserver;
+import mainPage.FCMSettings;
+import mainPage.MainView;
+import mainPage.Session;
 import paramSettings.interfaces.IParamController;
-import paramSettings.interfaces.ITableModel;
-import paramSettings.interfaces.ParamModelObserver;
+import paramSettings.interfaces.IParamModel;
 import utils.SwingUtils;
 
-public class ParamController implements IParamController, ParamModelObserver {
+public class ParamController implements IParamController {
 	
-	private ParamView view;
-	private ITableModel tableModel;
+	private MainView view;
+	private IParamModel paramModel;
 	
-	private List<ParamSettingsObserver> observers = new ArrayList<>();
+	// 记录当前model所属的项目lid
+	private String lid;
 	
-	public ParamController(ITableModel tableModel) {
-		this.tableModel = tableModel;
-		tableModel.addObserver(this);
-		this.view = new ParamView(tableModel, this);
-		view.initializeComponent();
-		view.hideButtons();
+	
+	public ParamController(IParamModel tableModel, MainView view) {
+		this.paramModel = tableModel;
+		this.view = view;
 	}
 	
 	@Override
 	public void removeRow(int row) {
+		if (!isParamSettingsOpenned()) {
+			SwingUtils.showErrorDialog(view, "请先打开项目");
+			return;
+		}
 		try {
-			tableModel.removeRow(row);
-			notifyObservers(new ParamSettingsEvent(this, 
-					ParamSettingsEvent.REMOVE, tableModel.getDataNames()));
+			paramModel.removeRow(row);
 		} catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "删除失败！异常信息：" + e.getMessage());
@@ -44,64 +40,42 @@ public class ParamController implements IParamController, ParamModelObserver {
 	
 	@Override
 	public void addRow() {
+		if (!isParamSettingsOpenned()) {
+			SwingUtils.showErrorDialog(view, "请先打开项目");
+			return;
+		}
 		try {
 			Object[] rowdata = {"New", 0, 0, false, false, false};
-			tableModel.addRow(rowdata);
-			notifyObservers(new ParamSettingsEvent(this, 
-					ParamSettingsEvent.ADD, tableModel.getDataNames()));
+			paramModel.addRow(rowdata);
 		} catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "添加失败！异常信息：" + e.getMessage());
 		}
 	}
 	
-	@Override
-	public JPanel getView() {
-		return view;
-	}
 	
 	@Override
-	public void disableTableEdit() {
-		view.disableTable();
-		view.hideButtons();
+	public void loadSettings() {
+		// 如果项目还没打开或者项目已经打开了但是项目切换了，则重新加载settings
+		if (!isParamSettingsOpenned() || isProjectSwitched()) {
+			lid = Session.getSelectedProjectLid();
+			String pathname = FCMSettings.getWorkSpacePath() 
+					+ "/" + Session.getSelectedProjectName() + "/" + "Settings";
+			try {
+				paramModel.init(pathname);
+			} catch (Exception e) {
+				e.printStackTrace();
+				SwingUtils.showErrorDialog(view, "加载ParamSettings失败！异常信息：" + e.getMessage());
+			}
+		}
 	}
 	
-	@Override
-	public void enableTableEdit() {
-		view.enableTable();
-		view.displayButtons();
+	private boolean isParamSettingsOpenned() {
+		return lid != null;
 	}
 	
-	@Override
-	public void loadSettings(String pathname) {
-		try {
-			tableModel.init(pathname);
-			view.displayButtons();
-			notifyObservers(new ParamSettingsEvent(this, 
-					ParamSettingsEvent.UPDATE, tableModel.getDataNames()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			SwingUtils.showErrorDialog(view, "加载ParamSettings失败！异常信息：" + e.getMessage());
-		}
-	}
-
-	@Override
-	public void addObserver(ParamSettingsObserver observer) {
-		observers.add(observer);
-	}
-
-	@Override
-	public void removeObserver(ParamSettingsObserver observer) {
-		if (observers.contains(observer)) {
-			observers.remove(observer);
-		}
-	}
-
-	@Override
-	public void notifyObservers(ParamSettingsEvent event) {
-		for (ParamSettingsObserver o : observers) {
-			o.paramSettingsUpdated(event);
-		}
+	private boolean isProjectSwitched() {
+		return lid != null && !lid.equals(Session.getSelectedProjectLid());
 	}
 	
 	@Override
@@ -111,17 +85,35 @@ public class ParamController implements IParamController, ParamModelObserver {
 		}
 		for (int key : checkBoxsMap.keySet()) {
 			if (column == key) {
-				tableModel.setValueAt(true, row, key);
+				paramModel.setValueAt(true, row, key);
 			}
 			else {
-				tableModel.setValueAt(false, row, key);
+				paramModel.setValueAt(false, row, key);
 			}
 		}
 	}
 
 	@Override
-	public void updated() {
-		notifyObservers(new ParamSettingsEvent(this, 
-				ParamSettingsEvent.UPDATE, tableModel.getDataNames()));
+	public void saveSettings() {
+		if (!isParamSettingsOpenned()) {
+			SwingUtils.showErrorDialog(view, "请先打开项目");
+			return;
+		}
+		String pathname = FCMSettings.getWorkSpacePath() 
+				+ "/" + Session.getSelectedProjectName() + "/" + "Settings";
+		try {
+			paramModel.save(pathname);
+		} catch (Exception e) {
+			e.printStackTrace();
+			SwingUtils.showErrorDialog(view, "保存ParamSettings失败！异常信息：" + e.getMessage());
+		}
 	}
+
+	@Override
+	public void clear() {
+		lid = null;
+		paramModel.clear();
+		view.repaint();
+	}
+
 }
