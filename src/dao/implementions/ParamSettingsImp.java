@@ -31,7 +31,8 @@ public class ParamSettingsImp implements IParamSettingsDAO {
 				"阈值 int," + 
 				"A boolean," + 
 				"H boolean," + 
-				"W boolean" + 
+				"W boolean," + 
+				"通道 int" + 
 				");";
 		pstmt = conn.prepareStatement(sql);
 		
@@ -43,7 +44,7 @@ public class ParamSettingsImp implements IParamSettingsDAO {
 	public List<ParamSettingsBean> findAll(String tableName) throws SQLException {
 		List<ParamSettingsBean> psBeans = new ArrayList<>();
 		
-		String sql = "select 参数名,电压值,阈值,A,H,W from " + tableName;
+		String sql = "select 参数名,电压值,阈值,A,H,W,通道 from " + tableName;
 		pstmt = conn.prepareStatement(sql);
 		ResultSet rs = pstmt.executeQuery();
 		
@@ -55,6 +56,8 @@ public class ParamSettingsImp implements IParamSettingsDAO {
 			psb.setA(rs.getBoolean(4));
 			psb.setH(rs.getBoolean(5));
 			psb.setW(rs.getBoolean(6));
+			psb.setChannelId(rs.getInt(7));
+			
 			psBeans.add(psb);
 		}
 		
@@ -65,7 +68,7 @@ public class ParamSettingsImp implements IParamSettingsDAO {
 	public boolean addParamSetting(String tableName, ParamSettingsBean psbean) throws SQLException {
 		boolean flag = false;
 		String sql = "insert into "
-				+ tableName + "(参数名,电压值,阈值,A,H,W) values(?,?,?,?,?,?)";
+				+ tableName + "(参数名,电压值,阈值,A,H,W,通道) values(?,?,?,?,?,?,?)";
 		pstmt = conn.prepareStatement(sql);
 		pstmt.setString(1, psbean.getParamName());
 		pstmt.setInt(2, psbean.getVoltage());
@@ -73,6 +76,7 @@ public class ParamSettingsImp implements IParamSettingsDAO {
 		pstmt.setBoolean(4, psbean.isA());
 		pstmt.setBoolean(5, psbean.isH());
 		pstmt.setBoolean(6, psbean.isW());
+		pstmt.setInt(7, psbean.getChannelId());
 		
 		if(pstmt.executeUpdate() > 0)
 		{//如果更新的行数大于0
@@ -139,7 +143,7 @@ public class ParamSettingsImp implements IParamSettingsDAO {
 		pstmt.execute();
 		// 再添加数据
 		String sql = "insert into " + tableName
-				+ "(参数名,电压值,阈值,A,H,W) values(?,?,?,?,?,?)";
+				+ "(参数名,电压值,阈值,A,H,W,通道) values(?,?,?,?,?,?,?)";
 		for (ParamSettingsBean b : beans) {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, b.getParamName());
@@ -148,6 +152,7 @@ public class ParamSettingsImp implements IParamSettingsDAO {
 			pstmt.setBoolean(4, b.isA());
 			pstmt.setBoolean(5, b.isH());
 			pstmt.setBoolean(6, b.isW());
+			pstmt.setInt(7, b.getChannelId());
 			pstmt.executeUpdate();
 		}
 		

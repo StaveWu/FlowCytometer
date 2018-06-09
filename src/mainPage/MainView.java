@@ -15,7 +15,9 @@ import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -38,8 +40,10 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import dao.beans.DirTreeBean;
+import dao.beans.ParamSettingsBean;
 import dashBoard.DashBoardController;
 import dashBoard.DashBoardModel;
+import dashBoard.IDashBoardModelObserver;
 import menu.ContainerPopupMenu;
 import menu.IContainerPopupMenuCommand;
 import menu.IMainMenuBarCommand;
@@ -96,6 +100,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 	private IParamModel paramModel;
 	private DashBoardModel dashBoardModel;
 	private ITubeModel tubeModel;
+//	private ICommDevice commDevice;
 	
 	public MainView() {
 		try {
@@ -117,14 +122,14 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 	private void createModels() throws SQLException {
 		treeModel = new ProjectTreeModel();
 		paramModel = new ParamModel();
-		dashBoardModel = new DashBoardModel();
 		tubeModel = new TubeModel();
+		dashBoardModel = new DashBoardModel();
 	}
 	
 	private void createControllers() {
 		treeController = new ProjectTreeController(treeModel, this);
 		paramController = new ParamController(paramModel, this);
-		dashBoardController = new DashBoardController(dashBoardModel, this);
+		dashBoardController = new DashBoardController(dashBoardModel, paramModel, this);
 		tubeController = new TubeController(tubeModel, this);
 	}
 	
@@ -472,12 +477,20 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 				}
 			}
 			if (e.getSource() == btnAdd) {
+				if (dashBoardModel.isOnSampling()) {
+					SwingUtils.showErrorDialog(MainView.this, "无法添加，正在采样中");
+					return;
+				}
+				
 				paramController.addRow();
 			}
 			if (e.getSource() == btnDelete) {
-				if(paramTable.getSelectedRow() > -1) {
-					paramController.removeRow(paramTable.getSelectedRow());
+				if (dashBoardModel.isOnSampling()) {
+					SwingUtils.showErrorDialog(MainView.this, "无法删除，正在采样中");
+					return;
 				}
+				
+				paramController.removeRow(paramTable.getSelectedRow());
 			}
 			
 			if (e.getSource() == btnSave) {
@@ -504,7 +517,8 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		}
 	}
 	
-	private class DashBoardView extends JPanel implements ItemListener, ActionListener {
+	private class DashBoardView extends JPanel implements ItemListener, ActionListener, 
+		IDashBoardModelObserver, ParamModelObserver {
 		
 		private JLabel limitLabel;
 		private JComboBox<String> comboBox;
@@ -517,6 +531,9 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		
 		public DashBoardView() {
 			initComponents();
+			checkSelected();
+			dashBoardModel.addObserver(this);
+			paramModel.addObserver(this);
 		}
 		
 		private void initComponents() {
@@ -579,14 +596,30 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			statusPanel.add(statusLabel);
 			this.add(SwingUtils.createPanelForComponent(statusPanel, "监视"));
 		}
+		
+		private void checkSelected() {
+			if (comboBox.getSelectedItem().equals("按时间")) {
+				unitLabel.setText("hours");;
+				checkBox.setSelected(false);
+				checkBox.setEnabled(false);
+			} else {
+				unitLabel.setText("events");
+				checkBox.setEnabled(true);
+			}
+		}
 
 		@Override
 		public void itemStateChanged(ItemEvent e) {
-			dashBoardController.checkSelected();
+			checkSelected();
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			if (!dashBoardModel.isConnected()) {
+				SwingUtils.showErrorDialog(MainView.this, "请先连接设备");
+				return;
+			}
+			
 			if (e.getSource() == btnStart) {
 				dashBoardController.startSampling();
 			} 
@@ -594,40 +627,20 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 				dashBoardController.stopSampling();
 			}
 		}
-		
-		public void enableCheckBox() {
-			checkBox.setEnabled(true);
+
+		@Override
+		public void statusChanged(boolean isOnSampling) {
+			if (isOnSampling) {
+				statusLabel.setText("当前状态：正在采样...");
+			}
+			else {
+				statusLabel.setText("当前状态：采样停止");
+			}
 		}
-		
-		public void disableCheckBox() {
-			checkBox.setEnabled(false);
-		}
-		
-		public void setHourUnit() {
-			unitLabel.setText("hours");
-		}
-		
-		public void setEventUnit() {
-			unitLabel.setText("events");
-		}
-		
-		public void setStatusStart() {
-			statusLabel.setText("当前状态：正在采样...");
-		}
-		public void setStatusStop() {
-			statusLabel.setText("当前状态：采样停止");
-		}
-		
-		public boolean isSelectTimeCondition() {
-			return comboBox.getSelectedItem().equals("按时间");
-		}
-		
-		public boolean isSelectEventCondition() {
-			return comboBox.getSelectedItem().equals("按个数");
-		}
-		
-		public void setCheckBox(boolean select) {
-			checkBox.setSelected(select);
+
+		@Override
+		public void paramModelUpdated(List<ParamSettingsBean> beans) {
+			dashBoardController.changeVoltage();
 		}
 	}
 	
@@ -680,6 +693,11 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
 			if (e.getSource() == plotContainer) {
 				if(e.getButton() == MouseEvent.BUTTON3 && showPopupMenu) {
 					Point p = e.getPoint();
@@ -687,12 +705,10 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 							plotContainer, p.x, p.y);
 				}
 			}
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
 			
+			if (e.getSource() == wsSaveButton) {
+				this.save();
+			}
 		}
 
 		@Override
@@ -755,14 +771,19 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			}
 		}
 		
-		public void save() throws Exception {
+		public void save() {
 			if (!isWorkSheetOpenned()) {
 				SwingUtils.showErrorDialog(MainView.this, "请先打开项目");
 				return;
 			}
 			String pathname = FCMSettings.getWorkSpacePath() 
 					+ "/" + Session.getSelectedProjectName() + "/" + "WorkSheet";
-			plotContainer.savePlots(pathname);
+			try {
+				plotContainer.savePlots(pathname);
+			} catch (Exception e) {
+				e.printStackTrace();
+				SwingUtils.showErrorDialog(MainView.this, "保存WorkSheet失败！异常信息：" + e.getMessage());
+			}
 		}
 		
 		public void addPlot(Plot plot) {
@@ -848,8 +869,23 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		}
 
 		@Override
-		public void updated() {
-			tubeController.setFields(paramModel.getDataNames());
+		public void paramModelUpdated(List<ParamSettingsBean> beans) {
+			Vector<String> dataNames = new Vector<>();
+			for (ParamSettingsBean ele : beans) {
+				String partA = ele.getParamName();
+				String partB = "";
+				if (ele.isA()) {
+					partB = "A";
+				}
+				else if (ele.isH()) {
+					partB = "H";
+				}
+				else if (ele.isW()) {
+					partB = "W";
+				}
+				dataNames.add(partA + "-" + partB);
+			}
+			tubeController.setFields(dataNames);
 		}
 	}
 	
@@ -867,41 +903,6 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 	
 	public void disableEdit() {
 		workSheetView.disableEdit();
-	}
-	
-	public void enableCheckBox() {
-		dashBoardView.enableCheckBox();
-	}
-	
-	public void disableCheckBox() {
-		dashBoardView.disableCheckBox();
-	}
-	
-	public void setHourUnit() {
-		dashBoardView.setHourUnit();
-	}
-	
-	public void setEventUnit() {
-		dashBoardView.setEventUnit();
-	}
-	
-	public void setStatusStart() {
-		dashBoardView.setStatusStart();
-	}
-	public void setStatusStop() {
-		dashBoardView.setStatusStop();
-	}
-	
-	public boolean isSelectTimeCondition() {
-		return dashBoardView.isSelectTimeCondition();
-	}
-	
-	public boolean isSelectEventCondition() {
-		return dashBoardView.isSelectEventCondition();
-	}
-	
-	public void setCheckBox(boolean select) {
-		dashBoardView.setCheckBox(select);
 	}
 
 	@Override
@@ -930,8 +931,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 
 	@Override
 	public void CommDeviceSetting() {
-		// TODO Auto-generated method stub
-		
+		new PortSettingBox(dashBoardModel);
 	}
 
 	@Override

@@ -22,6 +22,8 @@ public class ParamSettingsBean {
 	private boolean isH;
 	
 	private boolean isW;
+	
+	private int channelId;
 
 	public String getParamName() {
 		return paramName;
@@ -69,6 +71,14 @@ public class ParamSettingsBean {
 
 	public void setW(boolean isW) {
 		this.isW = isW;
+	}
+
+	public int getChannelId() {
+		return channelId;
+	}
+
+	public void setChannelId(int channelId) {
+		this.channelId = channelId;
 	}
 
 

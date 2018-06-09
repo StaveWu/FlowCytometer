@@ -1,48 +1,86 @@
 package dashBoard;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import dao.beans.ParamSettingsBean;
 import mainPage.MainView;
+import mainPage.Session;
+import paramSettings.interfaces.IParamModel;
 import utils.SwingUtils;
 
 public class DashBoardController {
 	
-	private DashBoardModel model;
 	private MainView view;
+	private IParamModel paramModel;
+	private DashBoardModel dashBoardModel;
 	
-	public DashBoardController(DashBoardModel model, MainView view) {
-		this.model = model;
+	public DashBoardController(DashBoardModel dashBoardModel, IParamModel paramModel, MainView view) {
+		this.dashBoardModel = dashBoardModel;
+		this.paramModel = paramModel;
 		this.view = view;
-		checkSelected();
 	}
 	
 	public void startSampling() {
+		if (Session.getSelectedTubeLid() == null) {
+			SwingUtils.showErrorDialog(view, "请先打开试管文件");
+			return;
+		}
+		
 		try {
-			model.startSampling();
-			view.setStatusStart();
-		} catch (Exception e) {
+			List<String> param = new ArrayList<>();
+			for (int i = 0; i < paramModel.getRowCount(); i++) {
+				ParamSettingsBean bean = paramModel.beanAt(i);
+				param.add("CH" + bean.getChannelId());
+			}
+			
+			dashBoardModel.startSampling(param);
+		} 
+		catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "发送数据失败！" + e.toString());
 		}
 	}
 	
 	public void stopSampling() {
+		if (Session.getSelectedTubeLid() == null) {
+			SwingUtils.showErrorDialog(view, "请先打开试管文件");
+			return;
+		}
+		
 		try {
-			model.stopSampling();
-			view.setStatusStop();
-		} catch (Exception e) {
+			List<String> param = new ArrayList<>();
+			for (int i = 0; i < paramModel.getRowCount(); i++) {
+				ParamSettingsBean bean = paramModel.beanAt(i);
+				param.add("CH" + bean.getChannelId());
+			}
+			
+			dashBoardModel.stopSampling(param);
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "发送数据失败！" + e.toString());
 		}
 		
 	}
 	
-	public void checkSelected() {
-		if (view.isSelectTimeCondition()) {
-			view.setHourUnit();
-			view.setCheckBox(false);
-			view.disableCheckBox();
-		} else {
-			view.setEventUnit();
-			view.enableCheckBox();
+	public void changeVoltage() {
+		if (!dashBoardModel.isOnSampling()) {
+			return;
+		}
+		
+		try {
+			List<Integer> param = new ArrayList<>();
+			for (int i = 0; i < paramModel.getRowCount(); i++) {
+				ParamSettingsBean bean = paramModel.beanAt(i);
+				param.add(bean.getVoltage());
+			}
+			
+			dashBoardModel.changeVoltage(param);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			SwingUtils.showErrorDialog(view, "发送数据失败！" + e.toString());
 		}
 	}
 

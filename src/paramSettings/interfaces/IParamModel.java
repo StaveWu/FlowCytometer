@@ -1,8 +1,8 @@
 package paramSettings.interfaces;
 
-import java.util.Vector;
-
 import javax.swing.table.TableModel;
+
+import dao.beans.ParamSettingsBean;
 
 public interface IParamModel {
 	
@@ -18,11 +18,11 @@ public interface IParamModel {
 	
 	void setValueAt(Object value, int row, int column);
 	
+	ParamSettingsBean beanAt(int row);
+	
 	int getRowCount();
 	
 	int getColumnCount();
-	
-	Vector<String> getDataNames();
 	
 	TableModel getDelegate();
 	

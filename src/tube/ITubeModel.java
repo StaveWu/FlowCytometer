@@ -4,9 +4,7 @@ import java.util.Vector;
 
 import javax.swing.table.TableModel;
 
-import gnu.io.SerialPortEventListener;
-
-public interface ITubeModel extends SerialPortEventListener {
+public interface ITubeModel {
 	
 	void init(String pathname) throws Exception;
 

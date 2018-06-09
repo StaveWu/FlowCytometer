@@ -10,6 +10,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 
+import dashBoard.DashBoardModel;
 import device.CommDeviceType;
 import device.ICommDevice;
 import device.SerialTool;
@@ -35,14 +36,15 @@ public class PortSettingBox extends JFrame implements ActionListener {
 	private JComboBox<String> combo1;
 	private JComboBox<Integer> combo2;
 	
-	private ICommDevice device;
+	private DashBoardModel dashBoardModel;
 	
 	/**
 	 * Create the application.
 	 */
-	public PortSettingBox() {
+	public PortSettingBox(DashBoardModel dashBoardModel) {
 		initialize();
 		this.setVisible(true);
+		this.dashBoardModel = dashBoardModel;
 	}
 
 	/**
@@ -203,18 +205,20 @@ public class PortSettingBox extends JFrame implements ActionListener {
 	}
 	
 	private void connectDevice() throws Exception {
-		if (rbtnSerialPort.isSelected()) {
-			device = SerialTool.getInstance();
-			device.open();
-		}
-		else if (rbtnUsb.isSelected()) {
-			// »¹Ã»Ð´
-		}
+		dashBoardModel.setDevice(getSelectedDeivce());
+		dashBoardModel.getDevice().open();
 	}
 	
 	private void disconnectDevice() {
-		if (device != null) {
-			device.close();
+		dashBoardModel.getDevice().close();
+	}
+	
+	private ICommDevice getSelectedDeivce() {
+		if (rbtnSerialPort.isSelected()) {
+			return SerialTool.getInstance();
+		}
+		else {
+			return null;
 		}
 	}
 	

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><settings>
 	<workspace>E:/04文档/陈宇欣/流式细胞仪/软件项目树测试</workspace>
-	<selectedProjectLid>0</selectedProjectLid>
 	<bootChooserBox>1</bootChooserBox>
 	<device>
 		<serialPort>
-			<portname>COM3</portname>
+			<portname>COM1</portname>
 			<baudrate>115200</baudrate>
 		</serialPort>
 		<usb/>

@@ -126,14 +126,6 @@ public class FCMSettings {
 		setContent("selected", type);
 	}
 	
-	public static void setSelectedProjectLid(String projectlid) {
-		setContent("selectedProjectLid", projectlid);
-	}
-	
-	public static String getSelectedProjectLid() {
-		return getContent("selectedProjectLid");
-	}
-	
 	private static String getContent(String tag) {
 		NodeList nodeList = DOC.getElementsByTagName(tag);
 		if (nodeList.getLength() <= 0) {

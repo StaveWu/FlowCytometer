@@ -30,15 +30,17 @@ public class ParamModel implements IParamModel {
 				 * 字符串格式校验，如果表格中checkBox被编辑了，
 				 * 则不修改model
 				 */
-				if (column > 2 && !(newValue.equals(true) || newValue.equals(false))) {
+				if (column > 2 && column < 6 && !(newValue.equals(true) || newValue.equals(false))) {
 					return;
 				}
-				try {
-					super.setValueAt(newValue, row, column);
-					notifyObservers();
-				} catch (Exception e) {
-					e.printStackTrace();
+				
+				if (column == 1 || column == 2 || column == 6) {
+					super.setValueAt(Integer.valueOf((String) newValue), row, column);
 				}
+				else {
+					super.setValueAt(newValue, row, column);
+				}
+				notifyObservers();
 			}
 		};
 		delegate.addColumn("参数名");
@@ -47,6 +49,7 @@ public class ParamModel implements IParamModel {
 		delegate.addColumn("A");
 		delegate.addColumn("H");
 		delegate.addColumn("W");
+		delegate.addColumn("通道");
 		
 	}
 	
@@ -68,7 +71,8 @@ public class ParamModel implements IParamModel {
 					bean.getThreshold(),
 					bean.isA(),
 					bean.isH(),
-					bean.isW()
+					bean.isW(),
+					bean.getChannelId()
 					};
 			addRow(rowdata);
 		}
@@ -99,46 +103,6 @@ public class ParamModel implements IParamModel {
 	public DefaultTableModel getDelegate() {
 		return delegate;
 	}
-	
-	private String getDataName(int row) {
-		try {
-			String partA = (String) delegate.getValueAt(row, 0);
-			String partB = "";
-			for (int i = 3; i < 6; i++) {
-				boolean flag = (boolean) delegate.getValueAt(row, i);
-				if (flag) {
-					switch (i) {
-					case 3:
-						partB = "A";
-						break;
-					case 4:
-						partB = "H";
-						break;
-					case 5:
-						partB = "W";
-						break;
-					default:
-						break;
-					}
-					break;
-				}
-			}
-			return partA + "-" + partB;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return null;
-		}
-		
-	}
-	
-	@Override
-	public Vector<String> getDataNames() {
-		Vector<String> res = new Vector<>();
-		int rowCount = delegate.getRowCount();
-		for (int i = 0; i < rowCount; i++) {
-			res.add(getDataName(i));
-		}
-		return res;
-	}
 
 	@Override
 	public void setValueAt(Object value, int row, int column) {
@@ -167,30 +131,38 @@ public class ParamModel implements IParamModel {
 
 	@Override
 	public void notifyObservers() {
-		observers.stream().forEach(e -> e.updated());
+		observers.stream().forEach(e -> {
+			e.paramModelUpdated(getBeans());
+		});
 	}
 
 	@Override
 	public void save(String pathname) throws Exception {
+		DAOFactory.getIParamSettingsDAOInstance(pathname).updateAll(settingsTableName, getBeans());
+	}
+	
+	@Override
+	public ParamSettingsBean beanAt(int row) {
+		@SuppressWarnings("rawtypes")
+		Vector v = (Vector) delegate.getDataVector().elementAt(row);
+		ParamSettingsBean psBean = new ParamSettingsBean();
 		
+		psBean.setParamName((String) v.get(0));
+		psBean.setVoltage((int) v.get(1));
+		psBean.setThreshold((int) v.get(2));
+		psBean.setA((boolean) v.get(3));
+		psBean.setH((boolean) v.get(4));
+		psBean.setW((boolean) v.get(5));
+		psBean.setChannelId((int) v.get(6));
+		
+		return psBean;
+	}
+	
+	private List<ParamSettingsBean> getBeans() {
 		List<ParamSettingsBean> beans = new ArrayList<>();
 		for (int i = 0; i < delegate.getRowCount(); i++) {
-			
-			@SuppressWarnings("rawtypes")
-			Vector v = (Vector) delegate.getDataVector().elementAt(i);
-			ParamSettingsBean psBean = new ParamSettingsBean();
-			
-			psBean.setParamName((String) v.get(0));
-			psBean.setVoltage((int) v.get(1));
-			psBean.setThreshold((int) v.get(2));
-			psBean.setA((boolean) v.get(3));
-			psBean.setH((boolean) v.get(4));
-			psBean.setW((boolean) v.get(5));
-			
-			beans.add(psBean);
-			
+			beans.add(beanAt(i));
 		}
-		
-		DAOFactory.getIParamSettingsDAOInstance(pathname).updateAll(settingsTableName, beans);
+		return beans;
 	}
 }

@@ -156,4 +156,14 @@ public class SerialTool implements ICommDevice {
 		}
 	}
 
+	@Override
+	public void addDeviceListener(Object listener) throws Exception {
+		addEventListener((SerialPortEventListener) listener);
+	}
+
+	@Override
+	public void removeDeviceListener(Object listener) {
+		removeEventListener();
+	}
+
 }

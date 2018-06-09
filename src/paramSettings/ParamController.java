@@ -45,7 +45,7 @@ public class ParamController implements IParamController {
 			return;
 		}
 		try {
-			Object[] rowdata = {"New", 0, 0, false, false, false};
+			Object[] rowdata = {"NEW", -1, -1, false, false, false, -1};
 			paramModel.addRow(rowdata);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -13,8 +13,6 @@ import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import device.SerialTool;
-import gnu.io.SerialPortEvent;
 import utils.StringUtils;
 
 
@@ -81,8 +79,7 @@ public class TubeModel implements ITubeModel {
 	}
 	
 	private void initFromFcs(String pathname) throws Exception {
-		// TODO Auto-generated method stub
-		
+		throw new NoSuchMethodException("不支持fcs解析");
 	}
 	
 	@Override
@@ -226,19 +223,6 @@ public class TubeModel implements ITubeModel {
 	@Override
 	public TableModel getDelegate() {
 		return delegate;
-	}
-
-	@Override
-	public void serialEvent(SerialPortEvent e) {
-		if (e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-			try {
-				System.out.println(new String(SerialTool.getInstance().read()));
-			} catch (Exception e1) {
-				e1.printStackTrace();
-				throw new RuntimeException("读取串口失败！");
-			}
-		}
-		
 	}
 
 
