@@ -14,6 +14,8 @@ public class Session {
 	private static String selectedTubeLid;
 	
 	private static String selectedTubeName;
+	
+	private static boolean isOnSampling;
 
 	
 	public static String getSelectedProjectLid() {
@@ -46,6 +48,14 @@ public class Session {
 
 	public static void setSelectedTubeName(String selectedTubeName) {
 		Session.selectedTubeName = selectedTubeName;
+	}
+
+	public static boolean isOnSampling() {
+		return isOnSampling;
+	}
+
+	public static void setOnSampling(boolean isOnSampling) {
+		Session.isOnSampling = isOnSampling;
 	}
 
 	

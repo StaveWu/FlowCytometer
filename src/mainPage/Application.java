@@ -7,7 +7,7 @@ public class Application {
 		if (FCMSettings.bootSpaceChooserBox()) {
 			new WorkSpaceChooserBox();
 		} else {
-			new MainPageController();
+			new MainView();
 		}
 	}
 

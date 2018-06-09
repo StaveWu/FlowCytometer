@@ -188,7 +188,7 @@ public class WorkSpaceChooserBox extends JFrame implements MouseListener, Window
 	@Override
 	public void windowClosed(WindowEvent arg0) {
 		// µ¯³öÖ÷´°Ìå
-		new MainPageController();
+		new MainView();
 	}
 
 	@Override

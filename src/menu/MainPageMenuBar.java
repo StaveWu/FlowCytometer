@@ -2,8 +2,6 @@ package menu;
 
 import java.lang.reflect.Method;
 
-import mainPage.MainPageController;
-
 @SuppressWarnings("serial")
 public class MainPageMenuBar extends MenuBarX {
 	

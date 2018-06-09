@@ -30,7 +30,7 @@ public class DashBoardModel implements SerialPortEventListener {
 		device.write(encode("StartSampling", param));
 		
 		isOnSampling = true;
-		notifyObservers();
+		notifyStatusChanged();
 	}
 	
 	/**
@@ -41,7 +41,7 @@ public class DashBoardModel implements SerialPortEventListener {
 		device.write(encode("StopSampling", param));
 		
 		isOnSampling = false;
-		notifyObservers();
+		notifyStatusChanged();
 	}
 	
 	/**
@@ -65,8 +65,12 @@ public class DashBoardModel implements SerialPortEventListener {
 		observers.remove(o);
 	}
 	
-	public void notifyObservers() {
+	public void notifyStatusChanged() {
 		observers.stream().forEach(e -> e.statusChanged(isOnSampling));
+	}
+	
+	public void notifyDataAvailable(Map<String, Double> data) {
+		observers.stream().forEach(e -> e.dataAvailable(data));
 	}
 
 	public ICommDevice getDevice() {
@@ -88,8 +92,7 @@ public class DashBoardModel implements SerialPortEventListener {
 	public void serialEvent(SerialPortEvent e) {
 		if (e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
-				Map<String, Double> kvs = decode(device.read());
-				System.out.println(kvs);
+				notifyDataAvailable(decode(device.read()));
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				throw new RuntimeException("Êý¾Ý¶ÁÈ¡´íÎó£¡");

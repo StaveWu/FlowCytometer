@@ -67,6 +67,8 @@ import projectTree.NodeType;
 import projectTree.ProjectTreeController;
 import projectTree.ProjectTreeModel;
 import projectTree.ProjectTreeUtils;
+import spectrum.SpectrumController;
+import spectrum.SpectrumModel;
 import tube.ITubeController;
 import tube.ITubeModel;
 import tube.TubeController;
@@ -94,20 +96,20 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 	private IParamController paramController;
 	private DashBoardController dashBoardController;
 	private ITubeController tubeController;
+	private SpectrumController spectrumController;
 	
 	// 模型
 	private IProjectTreeModel treeModel;
 	private IParamModel paramModel;
 	private DashBoardModel dashBoardModel;
 	private ITubeModel tubeModel;
-//	private ICommDevice commDevice;
+	private SpectrumModel spectrumModel;
 	
 	public MainView() {
 		try {
 			createModels();
 			createGUI();
 			createControllers();
-			hookObservers();
 		} 
 		catch (SQLException e) {
 			e.printStackTrace();
@@ -124,6 +126,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		paramModel = new ParamModel();
 		tubeModel = new TubeModel();
 		dashBoardModel = new DashBoardModel();
+		spectrumModel = new SpectrumModel();
 	}
 	
 	private void createControllers() {
@@ -131,10 +134,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		paramController = new ParamController(paramModel, this);
 		dashBoardController = new DashBoardController(dashBoardModel, paramModel, this);
 		tubeController = new TubeController(tubeModel, this);
-	}
-	
-	private void hookObservers() {
-		paramModel.addObserver(tubeView);
+		spectrumController = new SpectrumController(spectrumModel, this);
 	}
 
 	
@@ -477,7 +477,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 				}
 			}
 			if (e.getSource() == btnAdd) {
-				if (dashBoardModel.isOnSampling()) {
+				if (Session.isOnSampling()) {
 					SwingUtils.showErrorDialog(MainView.this, "无法添加，正在采样中");
 					return;
 				}
@@ -485,7 +485,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 				paramController.addRow();
 			}
 			if (e.getSource() == btnDelete) {
-				if (dashBoardModel.isOnSampling()) {
+				if (Session.isOnSampling()) {
 					SwingUtils.showErrorDialog(MainView.this, "无法删除，正在采样中");
 					return;
 				}
@@ -630,6 +630,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 
 		@Override
 		public void statusChanged(boolean isOnSampling) {
+			Session.setOnSampling(isOnSampling);
 			if (isOnSampling) {
 				statusLabel.setText("当前状态：正在采样...");
 			}
@@ -641,6 +642,20 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		@Override
 		public void paramModelUpdated(List<ParamSettingsBean> beans) {
 			dashBoardController.changeVoltage();
+			
+			if (Session.isOnSampling()) {
+				spectrumController.updateSpectrums(beans);
+			}
+			else {
+				spectrumController.refreshSpectrums(beans);
+			}
+		}
+
+		@Override
+		public void dataAvailable(Map<String, Double> data) {
+			if (Session.isOnSampling()) {
+				spectrumController.addData(data);
+			}
 		}
 	}
 	
@@ -835,6 +850,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		
 		public TubeView() {
 			initComponents();
+			paramModel.addObserver(this);
 		}
 		
 		private void initComponents() {
@@ -886,8 +902,10 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 				dataNames.add(partA + "-" + partB);
 			}
 			tubeController.setFields(dataNames);
+			
 		}
 	}
+	
 	
 	public void startEditing(DefaultMutableTreeNode node) {
 		projectTreeView.startEditing(node);
