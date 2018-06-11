@@ -174,7 +174,7 @@ public class PortSettingBox extends JFrame implements ActionListener {
 				this.dispose();
 			} catch (Exception e1) {
 				e1.printStackTrace();
-				SwingUtils.showErrorDialog(this, "连接设备失败！");
+				SwingUtils.showErrorDialog(this, "连接设备失败！" + e1.toString());
 			}
 		}
 		else if (e.getSource() == btnDisconnect) {

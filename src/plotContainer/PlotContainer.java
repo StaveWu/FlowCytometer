@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import dao.DAOFactory;
+import dashBoard.IDataCounter;
 import plot.ArrowPane;
 import plot.ArrowPaneContainer;
 import plot.Plot;
@@ -13,7 +14,7 @@ import tube.ITubeModel;
 import tube.TubeModel;
 
 @SuppressWarnings("serial")
-public class PlotContainer extends ArrowPaneContainer {
+public class PlotContainer extends ArrowPaneContainer implements IDataCounter {
 	
 	private PlotContainerObserver observer;
 	
@@ -117,6 +118,21 @@ public class PlotContainer extends ArrowPaneContainer {
 	public void removeObserver(PlotContainerObserver observer) {
 		if (observer != null) {
 			observer = null;
+		}
+	}
+
+	@Override
+	public int getDataCount(boolean constaint) {
+		// 如果有图并且指定要筛选，则获取最终筛选的数量
+		if (constaint && panes.size() > 0) {
+			Plot lastPlot = (Plot) panes.get(panes.size() - 1);
+			System.out.println(lastPlot);
+			System.out.println("返回：" + lastPlot.getDataCount());
+			return lastPlot.getDataCount();
+		} // 否则返回数据源的数量
+		else {
+			System.out.println("from DataSource");
+			return dataSource.getEventsCount();
 		}
 	}
 

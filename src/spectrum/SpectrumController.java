@@ -5,8 +5,6 @@ import java.util.Map;
 
 import dao.beans.ParamSettingsBean;
 import mainPage.MainView;
-import spectrum.wave.IWavePolicy;
-import spectrum.wave.WavePolicy;
 import utils.SwingUtils;
 
 public class SpectrumController {
@@ -58,18 +56,18 @@ public class SpectrumController {
 		}
 	}
 	
-	private IWavePolicy getWavePolicy(ParamSettingsBean b) {
+	private String getWavePolicy(ParamSettingsBean b) {
 		if (b.isA()) {
-			return WavePolicy.AREA;
+			return "A";
 		}
 		else if (b.isH()) {
-			return WavePolicy.HEIGHT;
+			return "H";
 		}
 		else if (b.isW()) {
-			return WavePolicy.WIDTH;
+			return "W";
 		}
 		else {
-			throw new IllegalArgumentException();
+			return "A";
 		}
 	}
 	

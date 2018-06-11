@@ -47,6 +47,11 @@ public class Axis {
 	 */
 	public static final int NAME_OFFSET = 26;
 	
+	/**
+	 * ÊÇ·ñ¶¯Ì¬
+	 */
+	private boolean isDynamic = false;
+	
 	PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
 	private String name;
@@ -304,6 +309,13 @@ public class Axis {
 	 */
 	public Point getEnd(Point start, int length) {
 		return dimensionStrategy.getEnd(start, length);
+	}
+	
+	public boolean isDynamic() {
+		return isDynamic;
+	}
+	public void setDynamic(boolean isDynamic) {
+		this.isDynamic = isDynamic;
 	}
 
 }

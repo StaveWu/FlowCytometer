@@ -2,30 +2,26 @@ package spectrum;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import spectrum.wave.IWavePolicy;
 
 public class Spectrum {
 	
 	private String name;
 	private int channelId;
 	private int threshold;
-	private IWavePolicy wavePolicy;
+	private String wavePolicy;
 	
-	private List<Double> data = new ArrayList<>(100);
-	private IIntensityCalculator calculator;
+	private List<Double> data = new ArrayList<>();
 	
 	public Spectrum() {
-		calculator = new IntensityCalculator();
+		
 	}
 	
 	public void addData(double d) {
 		data.add(d);
 	}
 	
-	public Map<Integer, Integer> getIntensities() {
-		return calculator.getIntensities(data, threshold, wavePolicy);
+	public List<Double> getData() {
+		return data;
 	}
 	
 
@@ -53,11 +49,11 @@ public class Spectrum {
 		this.threshold = threshold;
 	}
 
-	public IWavePolicy getWavePolicy() {
+	public String getWavePolicy() {
 		return wavePolicy;
 	}
 
-	public void setWavePolicy(IWavePolicy wavePolicy) {
+	public void setWavePolicy(String wavePolicy) {
 		this.wavePolicy = wavePolicy;
 	}
 	

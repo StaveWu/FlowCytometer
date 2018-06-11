@@ -116,11 +116,13 @@ public class TubeModel implements ITubeModel {
 		// 清空所有数据
 		Vector<Double> vector = null;
 		delegate.setColumnIdentifiers(vector);
+		notifyObservers();
 	}
 
 	@Override
 	public void addField(String field) {
 		delegate.addColumn(field);
+		notifyObservers();
 	}
 
 	@Override
@@ -135,16 +137,19 @@ public class TubeModel implements ITubeModel {
 			objs[i] = rowData[i];
 		}
 		delegate.addRow(objs);
+		notifyObservers();
 	}
 	
 	@Override
 	public void addEvent(Vector<Double> rowData) {
 		delegate.addRow(rowData);
+		notifyObservers();
 	}
 
 	@Override
 	public void removeEvent(int row) {
 		delegate.removeRow(row);
+		notifyObservers();
 	}
 
 	@Override
@@ -194,11 +199,13 @@ public class TubeModel implements ITubeModel {
 	@Override
 	public void setFields(Vector<String> fields) {
 		delegate.setColumnIdentifiers(fields);
+		notifyObservers();
 	}
 
 	@Override
 	public void setFields(String[] fields) {
 		delegate.setColumnIdentifiers(fields);
+		notifyObservers();
 	}
 
 	@Override

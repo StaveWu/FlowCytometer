@@ -1,5 +1,6 @@
 package tube;
 
+import java.util.List;
 import java.util.Vector;
 
 public interface ITubeController {
@@ -9,6 +10,8 @@ public interface ITubeController {
 	void save();
 	
 	void setFields(Vector<String> fields);
+	
+	void addEvents(List<Vector<Double>> es);
 	
 	void clear();
 

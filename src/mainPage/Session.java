@@ -1,11 +1,13 @@
 package mainPage;
 
+import projectTree.ProjectTreeObserver;
+
 /**
  * 程序运行期间保存的一些变量
  * @author wteng
  *
  */
-public class Session {
+public class Session implements ProjectTreeObserver {
 	
 	private static String selectedProjectLid;
 	
@@ -56,6 +58,20 @@ public class Session {
 
 	public static void setOnSampling(boolean isOnSampling) {
 		Session.isOnSampling = isOnSampling;
+	}
+	
+	/**
+	 * 如果树重命名了，在这边校验一下是否是被选中的lid重命名
+	 * 是则修改
+	 */
+	@Override
+	public void renamed(String lid, String newName) {
+		if (lid.equals(selectedProjectLid)) {
+			selectedProjectName = newName;
+		}
+		if (lid.equals(selectedTubeLid)) {
+			selectedTubeName = newName;
+		}
 	}
 
 	

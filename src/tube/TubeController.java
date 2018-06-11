@@ -1,5 +1,6 @@
 package tube;
 
+import java.util.List;
 import java.util.Vector;
 
 import mainPage.MainView;
@@ -64,6 +65,16 @@ public class TubeController implements ITubeController {
 	@Override
 	public void setFields(Vector<String> fields) {
 		model.setFields(fields);
+	}
+	
+	public void addEvents(List<Vector<Double>> es) {
+		if (es == null) {
+			return;
+		}
+		
+		for (Vector<Double> ele : es) {
+			model.addEvent(ele);
+		}
 	}
 
 }

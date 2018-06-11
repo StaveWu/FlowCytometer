@@ -49,13 +49,7 @@ public class DashBoardController {
 		}
 		
 		try {
-			List<String> param = new ArrayList<>();
-			for (int i = 0; i < paramModel.getRowCount(); i++) {
-				ParamSettingsBean bean = paramModel.beanAt(i);
-				param.add("CH" + bean.getChannelId());
-			}
-			
-			dashBoardModel.stopSampling(param);
+			dashBoardModel.stopSampling();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -78,6 +72,20 @@ public class DashBoardController {
 			
 			dashBoardModel.changeVoltage(param);
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+			SwingUtils.showErrorDialog(view, "发送数据失败！" + e.toString());
+		}
+	}
+	
+	public void resetSystem() {
+		if (!dashBoardModel.isOnSampling()) {
+			return;
+		}
+		
+		try {
+			dashBoardModel.resetSystem();
+		} 
 		catch (Exception e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(view, "发送数据失败！" + e.toString());

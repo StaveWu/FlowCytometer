@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -41,9 +42,13 @@ import javax.swing.tree.TreeSelectionModel;
 
 import dao.beans.DirTreeBean;
 import dao.beans.ParamSettingsBean;
+import dashBoard.CounterPolicy;
 import dashBoard.DashBoardController;
 import dashBoard.DashBoardModel;
 import dashBoard.IDashBoardModelObserver;
+import dashBoard.IHandlerTask;
+import dashBoard.ITickPolicy;
+import dashBoard.TimerPolicy;
 import menu.ContainerPopupMenu;
 import menu.IContainerPopupMenuCommand;
 import menu.IMainMenuBarCommand;
@@ -69,10 +74,13 @@ import projectTree.ProjectTreeModel;
 import projectTree.ProjectTreeUtils;
 import spectrum.SpectrumController;
 import spectrum.SpectrumModel;
+import spectrum.SpectrumModelObserver;
 import tube.ITubeController;
 import tube.ITubeModel;
 import tube.TubeController;
 import tube.TubeModel;
+import tube.TubeModelObserver;
+import utils.StringUtils;
 import utils.SwingUtils;
 
 @SuppressWarnings("serial")
@@ -83,6 +91,9 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 	private WorkSheetView workSheetView;
 	private DashBoardView dashBoardView;
 	private TubeView tubeView;
+	
+	private JLabel selectedLabel;
+	private StatusBar statusBar;
 	
 	// 框架
 	private JPanel leftPanel;
@@ -110,7 +121,8 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			createModels();
 			createGUI();
 			createControllers();
-		} 
+			createStatusMonitor();
+		}
 		catch (SQLException e) {
 			e.printStackTrace();
 			SwingUtils.showErrorDialog(this, e.getMessage());
@@ -197,10 +209,47 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		splitPane.setOneTouchExpandable(true);
 		this.add(splitPane, BorderLayout.CENTER);
 		
+		// 添加菜单栏
 		mainMenuBar = new MainPageMenuBar(this);
 		this.add(mainMenuBar, BorderLayout.NORTH);
 		
+		// 添加状态栏
+		selectedLabel = new JLabel("-");
+		statusBar = new StatusBar(
+				new Component[] {selectedLabel, Box.createHorizontalGlue()});
+		this.add(statusBar, BorderLayout.SOUTH);
+		
 		this.setVisible(true);
+	}
+	
+	
+	private void createStatusMonitor() {
+		
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while (true) {
+					String text = "";
+					if (Session.getSelectedProjectName() != null) {
+						text += Session.getSelectedProjectName();
+					}
+					else {
+						text += "-";
+					}
+					text += " : ";
+					if (Session.getSelectedTubeName() != null) {
+						text += Session.getSelectedTubeName();
+					}
+					else {
+						text += "-";
+					}
+					selectedLabel.setText(text);
+				}
+			}
+		});
+		t.setDaemon(true);
+		t.start();
 	}
 	
 	
@@ -263,9 +312,9 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		}
 		
 		private void loadTubeData(DefaultMutableTreeNode node) {
-			loadWorkSheet();
 			String pathname = FCMSettings.getWorkSpacePath() + ProjectTreeUtils.getRelaPath(node);
 			tubeController.loadData(pathname);
+			loadWorkSheet();
 		}
 		
 		private void recordSession(DefaultMutableTreeNode node) {
@@ -518,16 +567,19 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 	}
 	
 	private class DashBoardView extends JPanel implements ItemListener, ActionListener, 
-		IDashBoardModelObserver, ParamModelObserver {
+		IDashBoardModelObserver, ParamModelObserver, IHandlerTask {
 		
 		private JLabel limitLabel;
 		private JComboBox<String> comboBox;
 		private JCheckBox checkBox;
 		private JButton btnStart;
 		private JButton btnStop;
-		private JLabel unitLabel;
+		private JButton btnReset;
+		private JLabel timeLabel;
 		private JTextField tf;
 		private JLabel statusLabel;
+		
+		private ITickPolicy tickPolicy;
 		
 		public DashBoardView() {
 			initComponents();
@@ -549,7 +601,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			tf = new JTextField();
 			tf.setPreferredSize(new Dimension(100, 26));
 
-			unitLabel = new JLabel("hours");
+			timeLabel = new JLabel("minutes");
 			
 			checkBox = new JCheckBox("筛选");
 			
@@ -562,7 +614,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			limitPanel.add(limitLabel);
 			limitPanel.add(comboBox);
 			limitPanel.add(tf);
-			limitPanel.add(unitLabel);
+			limitPanel.add(timeLabel);
 			limitPanel.add(checkBox);
 			this.add(SwingUtils.createPanelForComponent(limitPanel, "约束"));
 			
@@ -577,6 +629,9 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			btnStop = new JButton("停止采样");
 			btnStop.addActionListener(this);
 			
+			btnReset = new JButton("系统复位");
+			btnReset.addActionListener(this);
+			
 			/*
 			 * 按钮面板
 			 */
@@ -584,6 +639,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			btnPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 10));
 			btnPanel.add(btnStart);
 			btnPanel.add(btnStop);
+			btnPanel.add(btnReset);
 			this.add(SwingUtils.createPanelForComponent(btnPanel, "操作"));
 			
 			/*
@@ -598,14 +654,26 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		}
 		
 		private void checkSelected() {
-			if (comboBox.getSelectedItem().equals("按时间")) {
-				unitLabel.setText("hours");;
+			if (baseTime()) {
+				timeLabel.setText("minutes");;
 				checkBox.setSelected(false);
 				checkBox.setEnabled(false);
 			} else {
-				unitLabel.setText("events");
+				timeLabel.setText("events");
 				checkBox.setEnabled(true);
 			}
+		}
+		
+		private boolean baseTime() {
+			return comboBox.getSelectedItem().equals("按时间");
+		}
+		
+		private boolean checkNumberSetting() {
+			if (!StringUtils.isNumber(tf.getText())) {
+				SwingUtils.showErrorDialog(MainView.this, "输入的设定值格式不正确！");
+				return false;
+			}
+			return true;
 		}
 
 		@Override
@@ -621,10 +689,29 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			}
 			
 			if (e.getSource() == btnStart) {
-				dashBoardController.startSampling();
+				if (checkNumberSetting()) {
+					dashBoardController.startSampling();
+					tickPolicy = getTickPolicy();
+					tickPolicy.tick(this);
+				}
 			} 
 			if (e.getSource() == btnStop) {
 				dashBoardController.stopSampling();
+				tickPolicy.stop();
+			}
+			if (e.getSource() == btnReset) {
+				dashBoardController.resetSystem();
+			}
+		}
+		
+		private ITickPolicy getTickPolicy() {
+			if (baseTime()) {
+				return new TimerPolicy((int)(Double.parseDouble(tf.getText()) * 60));
+			}
+			else {
+				return new CounterPolicy(
+						workSheetView.getPlotContainer(), 
+						(int)(Double.parseDouble(tf.getText())), checkBox.isSelected());
 			}
 		}
 
@@ -656,6 +743,11 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			if (Session.isOnSampling()) {
 				spectrumController.addData(data);
 			}
+		}
+
+		@Override
+		public void execute() {
+			dashBoardController.stopSampling();
 		}
 	}
 	
@@ -742,6 +834,10 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		public void mouseExited(MouseEvent e) {
 			// TODO Auto-generated method stub
 			
+		}
+		
+		public PlotContainer getPlotContainer() {
+			return plotContainer;
 		}
 		
 		public void enableEdit() {
@@ -842,7 +938,8 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 	}
 	
 	
-	private class TubeView extends JPanel implements ActionListener, ParamModelObserver {
+	private class TubeView extends JPanel implements ActionListener, 
+		ParamModelObserver, SpectrumModelObserver, TubeModelObserver {
 		
 		public JButton tubeSaveButton;
 		public JToolBar tubeToolBar;
@@ -851,6 +948,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 		public TubeView() {
 			initComponents();
 			paramModel.addObserver(this);
+			spectrumModel.addObserver(this);
 		}
 		
 		private void initComponents() {
@@ -904,6 +1002,16 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			tubeController.setFields(dataNames);
 			
 		}
+
+		@Override
+		public void newEventGenerated(List<Vector<Double>> data) {
+			tubeController.addEvents(data);
+		}
+
+		@Override
+		public void refresh() {
+			this.repaint();
+		}
 	}
 	
 	
@@ -931,8 +1039,9 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 
 	@Override
 	public void SaveAll() {
-		// TODO Auto-generated method stub
-		
+		paramController.saveSettings();
+		tubeController.save();
+		workSheetView.save();
 	}
 
 	@Override
@@ -943,8 +1052,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 
 	@Override
 	public void Exit() {
-		// TODO Auto-generated method stub
-		
+		System.exit(0);
 	}
 
 	@Override
@@ -954,8 +1062,7 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 
 	@Override
 	public void Version() {
-		// TODO Auto-generated method stub
-		
+		new VersionBox();
 	}
 
 	@Override

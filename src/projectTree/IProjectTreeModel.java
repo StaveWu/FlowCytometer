@@ -16,6 +16,12 @@ public interface IProjectTreeModel {
 	
 	void rename(DefaultMutableTreeNode node, String newName) throws Exception;
 	
+	void addObserver(ProjectTreeObserver o);
+	
+	void removeObserver(ProjectTreeObserver o);
+	
+	void notifyObservers(String lid, String newName);
+	
 	TreeModel getDelegate();
 
 }

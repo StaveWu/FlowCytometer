@@ -41,6 +41,8 @@ public class ProjectTreeModel implements IProjectTreeModel {
 	private DefaultTreeModel delegate;
 	private FileModel fileModel;
 	
+	private List<ProjectTreeObserver> observers = new ArrayList<>();
+	
 	private static String path = FCMSettings.getWorkSpacePath();
 	private String tableName;
 	
@@ -224,6 +226,10 @@ public class ProjectTreeModel implements IProjectTreeModel {
 		DAOFactory.getIDirTreeDAOInstance().update(tableName, gcs, message.getLid());
 		// 节点
 		message.setName(newName);
+		
+		// 通知Session
+		String lid = ((DirTreeBean)node.getUserObject()).getLid();
+		notifyObservers(lid, newName);
 	}
 	
 	private String getNewPathname(DefaultMutableTreeNode node, String newName) {
@@ -244,6 +250,21 @@ public class ProjectTreeModel implements IProjectTreeModel {
 	@Override
 	public TreeModel getDelegate() {
 		return delegate;
+	}
+
+	@Override
+	public void addObserver(ProjectTreeObserver o) {
+		observers.add(o);
+	}
+
+	@Override
+	public void removeObserver(ProjectTreeObserver o) {
+		observers.remove(o);
+	}
+
+	@Override
+	public void notifyObservers(String lid, String newName) {
+		observers.forEach(e -> e.renamed(lid, newName));
 	}
 
 }

@@ -18,6 +18,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -36,6 +37,7 @@ import plot.axis.AxisAlgebra;
 import plot.axis.AxisDimension;
 import plot.axis.AxisSettingBox;
 import plot.axis.AxisType;
+import plot.axis.HistogramAxisSettingBox;
 import plot.gate.Gate;
 import plot.gate.HorizontalGate;
 import plot.gate.PolygonGate;
@@ -116,7 +118,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 	/**
 	 * 数据点索引
 	 */
-	private List<Integer> dataIds = new ArrayList<>();
+	private List<Integer> dataIds = Collections.synchronizedList(new ArrayList<>());
 	
 	/**
 	 * 圈门数据索引
@@ -184,6 +186,7 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 		}
 		setDataIds(total);
 		setCoordsChanged(true);
+		this.repaint();
 	}
 	
 	public abstract String getPlotType();
@@ -303,17 +306,25 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 			return;
 		}
 		//如果不为空数组
-		axis[0].setMaxValue(ArrayUtils.getMax(x));
-		axis[0].setMinValue(ArrayUtils.getMin(x));
-		axis[1].setMaxValue(ArrayUtils.getMax(y));
-		axis[1].setMinValue(ArrayUtils.getMin(y));
+		if (axis[0].isDynamic()) {
+			axis[0].setMaxValue(ArrayUtils.getMax(x));
+			axis[0].setMinValue(ArrayUtils.getMin(x));
+		}
+		
+		if (axis[1].isDynamic()) {
+			axis[1].setMaxValue(ArrayUtils.getMax(y));
+			axis[1].setMinValue(ArrayUtils.getMin(y));
+		}
+		
 		if(axis.length > 2) {
 			double[] z = realCoords.getDataByName(axis[2].getName());
 			if (z == null || z.length == 0) {
 				return;
 			}
-			axis[2].setMaxValue(ArrayUtils.getMax(z));
-			axis[2].setMinValue(ArrayUtils.getMin(z));
+			if (axis[2].isDynamic()) {
+				axis[2].setMaxValue(ArrayUtils.getMax(z));
+				axis[2].setMinValue(ArrayUtils.getMin(z));
+			}
 		}
 	}
 	
@@ -643,37 +654,46 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 			if (axis == null || names == null || names.size() == 0) {
 				return;
 			}
-			if (axis == Plot.this.axis[1] && Plot.this instanceof Histogram) {
-				return;
-			}
+			
 			JPopupMenu pm = new JPopupMenu();
-			//插入轴的设置item
-			JMenuItem axisSetting = new JMenuItem("AxisSetting");
-			axisSetting.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent arg0) {
-					//弹出轴的设置框
-					new AxisSettingBox(Plot.this.getLocationOnScreen(), axis,
-							names);
-				}
-			});
-			pm.add(axisSetting);
-			pm.addSeparator();
-			//插入现有的数据名item
-			JMenuItem[] mis = new JMenuItem[names.size()];
-			for (int i = 0; i < mis.length; i++) {
-				mis[i] = new JMenuItem(names.get(i));
-			}
-			for(JMenuItem ele : mis) {
-				ele.addMouseListener(new MouseAdapter() {
+			if (axis == Plot.this.axis[1] && Plot.this instanceof Histogram) {
+				JMenuItem m = new JMenuItem("AxisSetting");
+				m.addMouseListener(new MouseAdapter() {
 					@Override
-					public void mousePressed(MouseEvent arg0) {
-						axis.setName(ele.getText());
-						Plot.this.setCoordsChanged(true);
+					public void mousePressed(MouseEvent e) {
+						//弹出轴的设置框
+						new HistogramAxisSettingBox(Plot.this.getLocationOnScreen(), axis);
 					}
 				});
-				pm.add(ele);
+				pm.add(m);
 			}
+			else {
+				//插入轴的设置item
+				JMenuItem axisSetting = new JMenuItem("AxisSetting");
+				axisSetting.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent arg0) {
+						//弹出轴的设置框
+						new AxisSettingBox(Plot.this.getLocationOnScreen(), axis,
+								names);
+					}
+				});
+				pm.add(axisSetting);
+				pm.addSeparator();
+				//插入现有的数据名item
+				for (int i = 0; i < names.size(); i++) {
+					JMenuItem mi = new JMenuItem(names.get(i));
+					mi.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent arg0) {
+							axis.setName(mi.getText());
+							Plot.this.setCoordsChanged(true);
+						}
+					});
+					pm.add(mi);
+				}
+			}
+			
 			pm.show(Plot.this, p.x, p.y);
 			
 		}
@@ -1011,4 +1031,12 @@ public abstract class Plot extends ArrowPane implements TubeModelObserver, Prope
 		rtStra = d == 3 ? RegionThreshold.T3D : RegionThreshold.T2D;
 	}
 	
+	public int getDataCount() {
+		return dataIds == null ? 0 : dataIds.size();
+	}
+	
+	@Override
+	public String toString() {
+		return getPlotType() + " with dataCount: " + getDataCount();
+	}
 }

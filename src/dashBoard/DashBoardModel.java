@@ -37,8 +37,8 @@ public class DashBoardModel implements SerialPortEventListener {
 	 * 控制硬件停止采样
 	 * @throws Exception 
 	 */
-	public void stopSampling(List<?> param) throws Exception {
-		device.write(encode("StopSampling", param));
+	public void stopSampling() throws Exception {
+		device.write(encode("StopSampling"));
 		
 		isOnSampling = false;
 		notifyStatusChanged();
@@ -51,6 +51,14 @@ public class DashBoardModel implements SerialPortEventListener {
 	 */
 	public void changeVoltage(List<?> param) throws Exception {
 		device.write(encode("ChangeVoltage", param));
+	}
+	
+	/**
+	 * 复位下位机
+	 * @throws Exception
+	 */
+	public void resetSystem() throws Exception {
+		device.write(encode("ResetSystem"));
 	}
 	
 	public boolean isOnSampling() {
@@ -104,24 +112,35 @@ public class DashBoardModel implements SerialPortEventListener {
 	
 	//////////////// CommDataParser //////////////
 	
+	private byte[] encode(String cmd) {
+		return encode(cmd, null);
+	}
+	
 	private byte[] encode(String cmd, List<?> param) {
 		// 格式：CMD:CH1,CH2,CH3
 		String partB = "";
-		for (Object ele : param) {
-			partB += ele;
-			partB += ",";
+		if (param != null) {
+			for (Object ele : param) {
+				partB += ele;
+				partB += ",";
+			}
+			partB = partB.substring(0, partB.length() - 1);
 		}
-		partB = partB.substring(0, partB.length() - 1);
 		return (cmd + ":" + partB + "\r\n").getBytes();
 	}
 	
 	private Map<String, Double> decode(byte[] data) {
-		// 格式：FSC:XXX_SSC:XXX_FITC:XXX
+		// 格式：CH1:XXX_CH2:XXX_CH3:XXX
 		Map<String, Double> res = new LinkedHashMap<>();
 		String dataStr = new String(data);
-		for (String ele : dataStr.split("_")) {
-			String[] kv = ele.split(":");
-			res.put(kv[0], Double.valueOf(kv[1]));
+		for (String ele : dataStr.split("\r\n")) {
+			if (ele.length() == 0) {
+				continue;
+			}
+			for (String ele2 : ele.split("_")) {
+				String[] kv = ele2.split(":");
+				res.put(kv[0], Double.valueOf(kv[1]));
+			}
 		}
 		return res;
 	}

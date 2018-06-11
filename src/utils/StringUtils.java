@@ -60,5 +60,15 @@ public class StringUtils {
 		}
 		return s[s.length - 1];
 	}
+	
+	public static boolean isNumber(String str) {
+		try {
+			Double.parseDouble(str);
+			return true;
+		}
+		catch (NumberFormatException e) {
+			return false;
+		}
+	}
 
 }
