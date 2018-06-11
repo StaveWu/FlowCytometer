@@ -20,6 +20,8 @@ public interface IParamModel {
 	
 	ParamSettingsBean beanAt(int row);
 	
+	void setEditableColumns(int[] columns);
+	
 	int getRowCount();
 	
 	int getColumnCount();

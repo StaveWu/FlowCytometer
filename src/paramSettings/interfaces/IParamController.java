@@ -15,6 +15,10 @@ public interface IParamController {
 	
 	void clear();
 	
+	void setSamplingEditableMode();
+	
+	void setNormalEditableMode();
+	
 	void modifySelection(int row, int column, Map<Integer, Component> checkBoxsMap);
 
 }

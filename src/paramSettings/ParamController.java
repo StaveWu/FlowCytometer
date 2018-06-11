@@ -115,5 +115,15 @@ public class ParamController implements IParamController {
 		paramModel.clear();
 		view.repaint();
 	}
+	
+	public void setSamplingEditableMode() {
+		// 只允许修改电压和阈值
+		paramModel.setEditableColumns(new int[] {1, 2});
+	}
+	
+	public void setNormalEditableMode() {
+		// 全部允许修改
+		paramModel.setEditableColumns(new int[] {0, 1, 2, 3, 4, 5, 6});
+	}
 
 }

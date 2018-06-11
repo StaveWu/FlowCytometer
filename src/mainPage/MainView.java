@@ -720,9 +720,11 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 			Session.setOnSampling(isOnSampling);
 			if (isOnSampling) {
 				statusLabel.setText("当前状态：正在采样...");
+				paramController.setSamplingEditableMode();
 			}
 			else {
 				statusLabel.setText("当前状态：采样停止");
+				paramController.setNormalEditableMode();
 			}
 		}
 

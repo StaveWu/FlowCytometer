@@ -16,6 +16,8 @@ public class ParamModel implements IParamModel {
 	
 	private DefaultTableModel delegate;
 	
+	private int[] editableColumns = {0, 1, 2, 3, 4, 5, 6};
+	
 	private static final String settingsTableName = "ParamSettings";
 	
 	private List<ParamModelObserver> observers = new ArrayList<>();
@@ -42,6 +44,20 @@ public class ParamModel implements IParamModel {
 				}
 				notifyObservers();
 			}
+			
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				if (editableColumns == null) {
+					return false;
+				}
+				
+				for (int i = 0; i < editableColumns.length; i++) {
+					if (column == editableColumns[i]) {
+						return true;
+					}
+				}
+				return false;
+			}
 		};
 		delegate.addColumn("参数名");
 		delegate.addColumn("电压值");
@@ -51,6 +67,10 @@ public class ParamModel implements IParamModel {
 		delegate.addColumn("W");
 		delegate.addColumn("通道");
 		
+	}
+	
+	public void setEditableColumns(int[] columns) {
+		editableColumns = columns;
 	}
 	
 	@Override
