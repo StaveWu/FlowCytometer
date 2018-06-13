@@ -24,6 +24,7 @@ public class TubeController implements ITubeController {
 	public void loadData(String pathname) {
 		if (!isTubeOpenned() || isTubeSwitched()) {
 			try {
+				tubeLid = Session.getSelectedTubeLid();
 				model.init(pathname);
 			} catch (Exception e) {
 				e.printStackTrace();

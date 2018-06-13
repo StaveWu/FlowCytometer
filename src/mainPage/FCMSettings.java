@@ -139,7 +139,7 @@ public class FCMSettings {
 		if (nodeList.getLength() <= 0) {
 			return;
 		}
-		nodeList.item(0).setTextContent(value.toString());
+		nodeList.item(0).setTextContent(value == null ? "" : value.toString());
 		save();
 	}
 }
