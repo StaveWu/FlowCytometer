@@ -177,6 +177,10 @@ public class AxisSettingBox {
 					axis.setAlgebraStrategy(AxisAlgebra.LINEAR);
 				}
 				else {
+					// 过滤最小值为0的情况
+					if (axis.getMinValue() == 0) {
+						axis.setMinValue(1);
+					}
 					axis.setAlgebraStrategy(AxisAlgebra.LOG);
 				}
 				frame.dispose();
