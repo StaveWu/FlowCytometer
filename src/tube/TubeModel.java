@@ -118,6 +118,13 @@ public class TubeModel implements ITubeModel {
 		delegate.setColumnIdentifiers(vector);
 		notifyObservers();
 	}
+	
+	public void removeAllEvents() {
+		int count = getEventsCount();
+		for (int i = count - 1; i >= 0; i--) {
+			removeEvent(i);
+		}
+	}
 
 	@Override
 	public void addField(String field) {

@@ -26,6 +26,8 @@ public interface ITubeModel {
 	
 	void removeEvent(int row);
 	
+	void removeAllEvents();
+	
 	void setValueAt(double aValue, int row, int column);
 	
 	int getEventsCount();

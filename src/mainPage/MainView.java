@@ -1007,7 +1007,8 @@ public class MainView extends JFrame implements IMainMenuBarCommand {
 
 		@Override
 		public void newEventGenerated(List<Vector<Double>> data) {
-			tubeController.addEvents(data);
+//			tubeController.addEvents(data);
+			tubeController.updateEvents(data);
 		}
 
 		@Override

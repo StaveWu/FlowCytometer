@@ -77,5 +77,17 @@ public class TubeController implements ITubeController {
 			model.addEvent(ele);
 		}
 	}
+	
+	@Override
+	public void updateEvents(List<Vector<Double>> es) {
+		if (es == null) {
+			return;
+		}
+		
+		model.removeAllEvents();
+		for (Vector<Double> ele : es) {
+			model.addEvent(ele);
+		}
+	}
 
 }

@@ -21,8 +21,6 @@ public class SpectrumModel {
 	
 	private ExecutorService pool;
 	
-	private List<Vector<Double>> events = new ArrayList<>();
-	
 	public SpectrumModel() {
 		pool = Executors.newCachedThreadPool();
 	}
@@ -121,21 +119,7 @@ public class SpectrumModel {
 			return;
 		}
 		
-		List<Vector<Double>> old = this.events;
-		this.events = es;
-		
-		if (es.size() < old.size()) {
-			throw new RuntimeException("算子错误，新的计算结果比上一次计算结果小");
-		}
-		if (es.size() == old.size()) {
-			return;
-		}
-		// 获取新添加的试管数据
-		List<Vector<Double>> newIn = new ArrayList<>();
-		for (int i = old.size(); i < es.size(); i++) {
-			newIn.add(es.get(i));
-		}
-		notifyObservers(newIn);
+		notifyObservers(es);
 	}
 
 }

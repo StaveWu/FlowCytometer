@@ -13,6 +13,12 @@ public interface ITubeController {
 	
 	void addEvents(List<Vector<Double>> es);
 	
+	/**
+	 * Ìæ»»ËùÓĞµÄevents
+	 * @param es
+	 */
+	void updateEvents(List<Vector<Double>> es);
+	
 	void clear();
 
 }
